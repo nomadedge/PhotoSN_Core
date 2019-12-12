@@ -6,6 +6,22 @@ namespace PhotoSN.Data.DAL
 {
     public class User
     {
+        public User()
+        {
+            Posts = new HashSet<Post>();
+            Comments = new HashSet<Comment>();
+            InPostMentions = new HashSet<InPostMention>();
+            InCommentMentions = new HashSet<InCommentMention>();
+            PostLikes = new HashSet<PostLike>();
+            CommentLikes = new HashSet<CommentLike>();
+            Blacklist = new HashSet<BlacklistRow>();
+            BlockedBy = new HashSet<BlacklistRow>();
+            Following = new HashSet<Subscription>();
+            Followers = new HashSet<Subscription>();
+            Images = new HashSet<Image>();
+            Avatars = new HashSet<Avatar>();
+        }
+
         public int UserId { get; set; }
         [Required]
         [StringLength(50)]

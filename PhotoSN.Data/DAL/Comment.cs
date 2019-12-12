@@ -5,6 +5,12 @@ namespace PhotoSN.Data.DAL
 {
     public class Comment
     {
+        public Comment()
+        {
+            InCommentMentions = new HashSet<InCommentMention>();
+            CommentLikes = new HashSet<CommentLike>();
+        }
+
         public int CommentId { get; set; }
         [Required]
         public Post Post { get; set; }
