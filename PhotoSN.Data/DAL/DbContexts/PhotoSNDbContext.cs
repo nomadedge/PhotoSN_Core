@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PhotoSN.Data.DAL.Entities;
 
 namespace PhotoSN.Data.DAL.DbContexts
 {

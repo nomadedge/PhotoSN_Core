@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PhotoSN.Data.DAL
+namespace PhotoSN.Data.DAL.Entities
 {
-    public class PostLike
+    public class InPostHashtag
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int PostId { get; set; }
@@ -10,8 +10,8 @@ namespace PhotoSN.Data.DAL
         public Post Post { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int UserId { get; set; }
-        [ForeignKey("UserId")]
-        public User User { get; set; }
+        public int HashtagId { get; set; }
+        [ForeignKey("HashtagId")]
+        public Hashtag Hashtag { get; set; }
     }
 }

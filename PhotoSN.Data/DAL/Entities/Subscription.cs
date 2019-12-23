@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PhotoSN.Data.DAL
+namespace PhotoSN.Data.DAL.Entities
 {
     public class Subscription
     {

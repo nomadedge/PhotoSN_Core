@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace PhotoSN.Data.DAL
+namespace PhotoSN.Data.DAL.Entities
 {
     public class User
     {

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PhotoSN.Data.DAL
+namespace PhotoSN.Data.DAL.Entities
 {
-    public class CommentLike
+    public class InCommentMention
     {
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int CommentId { get; set; }
