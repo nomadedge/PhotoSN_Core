@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PhotoSN.Data;
+using PhotoSN.Data.BLL.DbManagers;
+using PhotoSN.Data.DAL.DbContexts;
 
 namespace PhotoSN
 {
@@ -21,10 +21,11 @@ namespace PhotoSN
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<PhotoSNDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(Configuration.GetConnectionString("MsSqlServer")));
+
+            services.AddScoped<IPhotoSNDbManager, SqlPhotoSNDbManager>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -36,10 +37,7 @@ namespace PhotoSN
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllers();
             });
         }
     }

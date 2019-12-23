@@ -19,7 +19,7 @@ namespace PhotoSN.Data.DAL
         [Required]
         [StringLength(300)]
         public string Text { get; set; }
-        public ICollection<InCommentMention> InCommentMentions { get; set; }
-        public ICollection<CommentLike> CommentLikes { get; set; }
+        public virtual ICollection<InCommentMention> InCommentMentions { get; set; }
+        public virtual ICollection<CommentLike> CommentLikes { get; set; }
     }
 }

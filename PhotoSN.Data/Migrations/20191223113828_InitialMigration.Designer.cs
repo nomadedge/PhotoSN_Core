@@ -5,12 +5,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PhotoSN.Data;
+using PhotoSN.Data.DAL.DbContexts;
 
 namespace PhotoSN.Data.Migrations
 {
     [DbContext(typeof(PhotoSNDbContext))]
-    [Migration("20191212140211_InitialMigration")]
+    [Migration("20191223113828_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -395,7 +395,7 @@ namespace PhotoSN.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("PhotoSN.Data.DAL.Post", "Post")
-                        .WithMany()
+                        .WithMany("InPostHashtags")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

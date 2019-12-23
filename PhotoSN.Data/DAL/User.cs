@@ -41,17 +41,17 @@ namespace PhotoSN.Data.DAL
         [StringLength(300)]
         public string Bio { get; set; }
         public bool IsPrivate { get; set; }
-        public ICollection<Post> Posts { get; set; }
-        public ICollection<Comment> Comments { get; set; }
-        public ICollection<InPostMention> InPostMentions { get; set; }
-        public ICollection<InCommentMention> InCommentMentions { get; set; }
-        public ICollection<PostLike> PostLikes { get; set; }
-        public ICollection<CommentLike> CommentLikes { get; set; }
-        public ICollection<BlacklistRow> Blacklist { get; set; }
-        public ICollection<BlacklistRow> BlockedBy { get; set; }
-        public ICollection<Subscription> Following { get; set; }
-        public ICollection<Subscription> Followers { get; set; }
-        public ICollection<Image> Images { get; set; }
-        public ICollection<Avatar> Avatars { get; set; }
+        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
+        public virtual ICollection<InPostMention> InPostMentions { get; set; }
+        public virtual ICollection<InCommentMention> InCommentMentions { get; set; }
+        public virtual ICollection<PostLike> PostLikes { get; set; }
+        public virtual ICollection<CommentLike> CommentLikes { get; set; }
+        public virtual ICollection<BlacklistRow> Blacklist { get; set; }
+        public virtual ICollection<BlacklistRow> BlockedBy { get; set; }
+        public virtual ICollection<Subscription> Following { get; set; }
+        public virtual ICollection<Subscription> Followers { get; set; }
+        public virtual ICollection<Image> Images { get; set; }
+        public virtual ICollection<Avatar> Avatars { get; set; }
     }
 }

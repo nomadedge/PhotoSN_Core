@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PhotoSN.Data.DAL;
 
-namespace PhotoSN.Data
+namespace PhotoSN.Data.DAL.DbContexts
 {
     public class PhotoSNDbContext : DbContext
     {

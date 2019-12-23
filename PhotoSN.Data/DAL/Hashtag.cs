@@ -5,10 +5,15 @@ namespace PhotoSN.Data.DAL
 {
     public class Hashtag
     {
+        public Hashtag()
+        {
+            InPostHashtags = new HashSet<InPostHashtag>();
+        }
+
         public int HashtagId { get; set; }
         [Required]
         [StringLength(20)]
         public string Text { get; set; }
-        public ICollection<InPostHashtag> InPostHashtags { get; set; }
+        public virtual ICollection<InPostHashtag> InPostHashtags { get; set; }
     }
 }

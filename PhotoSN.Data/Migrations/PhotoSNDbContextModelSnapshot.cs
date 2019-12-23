@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PhotoSN.Data;
+using PhotoSN.Data.DAL.DbContexts;
 
 namespace PhotoSN.Data.Migrations
 {
@@ -393,7 +393,7 @@ namespace PhotoSN.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("PhotoSN.Data.DAL.Post", "Post")
-                        .WithMany()
+                        .WithMany("InPostHashtags")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
