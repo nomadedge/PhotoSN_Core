@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PhotoSN.Data.DAL.DbContexts;
+using PhotoSN.Data.DbContexts;
 
 namespace PhotoSN.Data.Migrations
 {
@@ -19,7 +19,7 @@ namespace PhotoSN.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Avatar", b =>
+            modelBuilder.Entity("PhotoSN.Data.Avatar", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -34,7 +34,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Avatars");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.BlacklistRow", b =>
+            modelBuilder.Entity("PhotoSN.Data.BlacklistRow", b =>
                 {
                     b.Property<int>("FirstUserId")
                         .HasColumnType("int");
@@ -49,7 +49,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Bans");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Comment", b =>
+            modelBuilder.Entity("PhotoSN.Data.Comment", b =>
                 {
                     b.Property<int>("CommentId")
                         .ValueGeneratedOnAdd()
@@ -76,7 +76,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.CommentLike", b =>
+            modelBuilder.Entity("PhotoSN.Data.CommentLike", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -91,7 +91,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("CommentLikes");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Hashtag", b =>
+            modelBuilder.Entity("PhotoSN.Data.Hashtag", b =>
                 {
                     b.Property<int>("HashtagId")
                         .ValueGeneratedOnAdd()
@@ -110,7 +110,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Hashtags");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Image", b =>
+            modelBuilder.Entity("PhotoSN.Data.Image", b =>
                 {
                     b.Property<int>("ImageId")
                         .ValueGeneratedOnAdd()
@@ -138,7 +138,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.InCommentMention", b =>
+            modelBuilder.Entity("PhotoSN.Data.InCommentMention", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -153,7 +153,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("InCommentMentions");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.InPostHashtag", b =>
+            modelBuilder.Entity("PhotoSN.Data.InPostHashtag", b =>
                 {
                     b.Property<int>("HashtagId")
                         .HasColumnType("int");
@@ -168,7 +168,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("InPostHashtags");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.InPostMention", b =>
+            modelBuilder.Entity("PhotoSN.Data.InPostMention", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -183,7 +183,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("InPostMentions");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Post", b =>
+            modelBuilder.Entity("PhotoSN.Data.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
@@ -204,7 +204,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.PostImage", b =>
+            modelBuilder.Entity("PhotoSN.Data.PostImage", b =>
                 {
                     b.Property<int>("ImageId")
                         .HasColumnType("int");
@@ -222,7 +222,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("PostImages");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.PostLike", b =>
+            modelBuilder.Entity("PhotoSN.Data.PostLike", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -237,7 +237,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("PostLikes");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Subscription", b =>
+            modelBuilder.Entity("PhotoSN.Data.Subscription", b =>
                 {
                     b.Property<int>("FirstUserId")
                         .HasColumnType("int");
@@ -255,7 +255,7 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.User", b =>
+            modelBuilder.Entity("PhotoSN.Data.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -300,168 +300,168 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Avatar", b =>
+            modelBuilder.Entity("PhotoSN.Data.Avatar", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Image", "Image")
+                    b.HasOne("PhotoSN.Data.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("Avatars")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.BlacklistRow", b =>
+            modelBuilder.Entity("PhotoSN.Data.BlacklistRow", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.User", "FirstUser")
+                    b.HasOne("PhotoSN.Data.User", "FirstUser")
                         .WithMany("Blacklist")
                         .HasForeignKey("FirstUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "SecondUser")
+                    b.HasOne("PhotoSN.Data.User", "SecondUser")
                         .WithMany("BlockedBy")
                         .HasForeignKey("SecondUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Comment", b =>
+            modelBuilder.Entity("PhotoSN.Data.Comment", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Post", "Post")
+                    b.HasOne("PhotoSN.Data.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.CommentLike", b =>
+            modelBuilder.Entity("PhotoSN.Data.CommentLike", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Comment", "Comment")
+                    b.HasOne("PhotoSN.Data.Comment", "Comment")
                         .WithMany("CommentLikes")
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("CommentLikes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Image", b =>
+            modelBuilder.Entity("PhotoSN.Data.Image", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("Images")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.InCommentMention", b =>
+            modelBuilder.Entity("PhotoSN.Data.InCommentMention", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Comment", "Comment")
+                    b.HasOne("PhotoSN.Data.Comment", "Comment")
                         .WithMany("InCommentMentions")
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("InCommentMentions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.InPostHashtag", b =>
+            modelBuilder.Entity("PhotoSN.Data.InPostHashtag", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Hashtag", "Hashtag")
+                    b.HasOne("PhotoSN.Data.Hashtag", "Hashtag")
                         .WithMany("InPostHashtags")
                         .HasForeignKey("HashtagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.Post", "Post")
+                    b.HasOne("PhotoSN.Data.Post", "Post")
                         .WithMany("InPostHashtags")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.InPostMention", b =>
+            modelBuilder.Entity("PhotoSN.Data.InPostMention", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Post", "Post")
+                    b.HasOne("PhotoSN.Data.Post", "Post")
                         .WithMany("InPostMentions")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("InPostMentions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Post", b =>
+            modelBuilder.Entity("PhotoSN.Data.Post", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.PostImage", b =>
+            modelBuilder.Entity("PhotoSN.Data.PostImage", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Image", "Image")
+                    b.HasOne("PhotoSN.Data.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.Post", "Post")
+                    b.HasOne("PhotoSN.Data.Post", "Post")
                         .WithMany("PostImages")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.PostLike", b =>
+            modelBuilder.Entity("PhotoSN.Data.PostLike", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.Post", "Post")
+                    b.HasOne("PhotoSN.Data.Post", "Post")
                         .WithMany("PostLikes")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "User")
+                    b.HasOne("PhotoSN.Data.User", "User")
                         .WithMany("PostLikes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.DAL.Subscription", b =>
+            modelBuilder.Entity("PhotoSN.Data.Subscription", b =>
                 {
-                    b.HasOne("PhotoSN.Data.DAL.User", "FirstUser")
+                    b.HasOne("PhotoSN.Data.User", "FirstUser")
                         .WithMany("Following")
                         .HasForeignKey("FirstUserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("PhotoSN.Data.DAL.User", "SecondUser")
+                    b.HasOne("PhotoSN.Data.User", "SecondUser")
                         .WithMany("Followers")
                         .HasForeignKey("SecondUserId")
                         .OnDelete(DeleteBehavior.NoAction)
