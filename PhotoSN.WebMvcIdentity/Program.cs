@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace PhotoSN.WebMvc
+namespace PhotoSN.WebMvcIdentity
 {
     public class Program
     {

@@ -1,15 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using PhotoSN.Data.Entities;
 
 namespace PhotoSN.Data.DbContexts
 {
-    public class PhotoSNDbContext : DbContext
+    public class PhotoSNDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public PhotoSNDbContext(DbContextOptions<PhotoSNDbContext> options)
             : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
+
             builder.Entity<Avatar>().HasKey(a => new
             {
                 a.UserId,
@@ -111,7 +115,6 @@ namespace PhotoSN.Data.DbContexts
                 .OnDelete(DeleteBehavior.NoAction);
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<BlacklistRow> Bans { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
 

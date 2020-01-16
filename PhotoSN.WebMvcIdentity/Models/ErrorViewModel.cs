@@ -1,4 +1,4 @@
-namespace PhotoSN.WebMvc.ViewModels
+namespace PhotoSN.WebMvcIdentity.Models
 {
     public class ErrorViewModel
     {

@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace PhotoSN.Data.Entities
 {
-    public class User
+    public class User : IdentityUser<int>
     {
         public User()
         {
@@ -22,20 +23,6 @@ namespace PhotoSN.Data.Entities
             Avatars = new HashSet<Avatar>();
         }
 
-        public int UserId { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string Email { get; set; }
-        [Required]
-        [StringLength(150)]
-        public string PasswordHash { get; set; }
-        [Required]
-        [StringLength(150)]
-        public string Salt { get; set; }
-        [Required]
-        [StringLength(50)]
-        public string Username { get; set; }
-        public DateTime RegDate { get; set; }
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; }
         [StringLength(300)]

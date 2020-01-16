@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSN.Data", "PhotoSN.Data\PhotoSN.Data.csproj", "{DB94FE3D-FD10-4BC3-B22F-1691793E55FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSN.Model", "PhotoSN.Model\PhotoSN.Model.csproj", "{EE23AF23-768D-43D8-810B-5E3A899600F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoSN.Model", "PhotoSN.Model\PhotoSN.Model.csproj", "{EE23AF23-768D-43D8-810B-5E3A899600F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSN.WebMvc", "PhotoSN.WebMvc\PhotoSN.WebMvc.csproj", "{C01ABB52-AC6E-4674-A4A7-08DD294051C6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoSN.WebMvcIdentity", "PhotoSN.WebMvcIdentity\PhotoSN.WebMvcIdentity.csproj", "{2C34D941-160A-4EC2-B0D9-D64AA550DF39}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{EE23AF23-768D-43D8-810B-5E3A899600F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE23AF23-768D-43D8-810B-5E3A899600F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE23AF23-768D-43D8-810B-5E3A899600F3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C01ABB52-AC6E-4674-A4A7-08DD294051C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C01ABB52-AC6E-4674-A4A7-08DD294051C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C01ABB52-AC6E-4674-A4A7-08DD294051C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C01ABB52-AC6E-4674-A4A7-08DD294051C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C34D941-160A-4EC2-B0D9-D64AA550DF39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C34D941-160A-4EC2-B0D9-D64AA550DF39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C34D941-160A-4EC2-B0D9-D64AA550DF39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C34D941-160A-4EC2-B0D9-D64AA550DF39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

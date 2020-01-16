@@ -1,25 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using PhotoSN.WebMvc.ViewModels;
+using PhotoSN.WebMvcIdentity.Models;
 using System.Diagnostics;
 
-namespace PhotoSN.WebMvc.Controllers
+namespace PhotoSN.WebMvcIdentity.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }
