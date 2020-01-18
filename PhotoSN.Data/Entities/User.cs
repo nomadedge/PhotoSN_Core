@@ -23,6 +23,9 @@ namespace PhotoSN.Data.Entities
             Avatars = new HashSet<Avatar>();
         }
 
+        [Required]
+        [StringLength(20)]
+        public string Nickname { get; set; }
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; }
         [StringLength(300)]

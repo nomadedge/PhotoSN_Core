@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 namespace PhotoSN.Data.Migrations
 {
@@ -42,6 +42,7 @@ namespace PhotoSN.Data.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
+                    Nickname = table.Column<string>(maxLength: 20, nullable: false),
                     BirthDate = table.Column<DateTime>(nullable: true),
                     Bio = table.Column<string>(maxLength: 300, nullable: true),
                     IsPrivate = table.Column<bool>(nullable: false)

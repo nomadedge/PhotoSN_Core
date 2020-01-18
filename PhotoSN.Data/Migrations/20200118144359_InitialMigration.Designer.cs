@@ -10,7 +10,7 @@ using PhotoSN.Data.DbContexts;
 namespace PhotoSN.Data.Migrations
 {
     [DbContext(typeof(PhotoSNDbContext))]
-    [Migration("20200116102616_InitialMigration")]
+    [Migration("20200118144359_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -427,6 +427,11 @@ namespace PhotoSN.Data.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(256)")

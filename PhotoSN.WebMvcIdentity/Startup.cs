@@ -1,11 +1,14 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
+using PhotoSN.WebMvcIdentity.Services;
 
 namespace PhotoSN.WebMvcIdentity
 {
@@ -27,6 +30,9 @@ namespace PhotoSN.WebMvcIdentity
                 .AddEntityFrameworkStores<PhotoSNDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<IEmailSender, SendGridEmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using PhotoSN.Data.Entities;
+using System.Threading.Tasks;
 
 namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
 {
