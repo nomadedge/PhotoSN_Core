@@ -62,7 +62,7 @@ namespace PhotoSN.Data.Repositories
                 var getImageDto = _mapper.Map<GetImageDto>(image);
                 return getImageDto;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }

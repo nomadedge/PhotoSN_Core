@@ -2,6 +2,6 @@
 {
     public class ImageHelperOptions
     {
-        public string BlobStoragePath { get; set; }
+        public string ImageStoragePath { get; set; }
     }
 }

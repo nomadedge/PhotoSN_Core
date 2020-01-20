@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PhotoSN.Data.Repositories;
 using PhotoSN.WebMvcIdentity.Services;
 using System;
@@ -32,10 +31,6 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             catch (ArgumentException e)
             {
                 return NotFound(e.Message);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
         }
     }

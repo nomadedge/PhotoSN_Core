@@ -17,7 +17,7 @@ namespace PhotoSN.WebMvcIdentity.Services
 
         private string GetFullFileName(Guid guid)
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), _imageHelperOptions.BlobStoragePath, guid.ToString("N"));
+            return Path.Combine(Directory.GetCurrentDirectory(), _imageHelperOptions.ImageStoragePath, guid.ToString("N"));
         }
 
         public async Task SaveImageAsync(byte[] byteArray, Guid guid)
@@ -34,7 +34,7 @@ namespace PhotoSN.WebMvcIdentity.Services
             {
                 return await File.ReadAllBytesAsync(fileInfo.FullName);
             }
-            throw new FileNotFoundException($"{fileInfo} not found.");
+            throw new FileNotFoundException($"{fileName} not found.");
         }
     }
 }

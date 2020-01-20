@@ -10,6 +10,14 @@
 <div class="row">
     <div class="col-md-6">
         <form id="profile-form" method="post">
+            @*<div class="form-group">
+                <label asp-for="Input.AvatarImageId">
+                    <img id="AvatarImage"
+                            src="@Url.Action("Get", "Image", new { id=Model.Input.AvatarImageId })"
+                            onerror="this.onerror=null;this.src='https://images.pexels.com/photos/2769325/pexels-photo-2769325.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=150&w=150&fit=crop';" />
+                </label>
+                <input asp-for="Input.AvatarImageId" type="file" id="AvatarInput" onchange="Upload(this);">
+            </div>*@
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Username"></label>

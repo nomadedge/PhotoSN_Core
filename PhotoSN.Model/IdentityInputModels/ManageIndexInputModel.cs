@@ -17,7 +17,6 @@ namespace PhotoSN.Model.IdentityInputModels
         public string Bio { get; set; }
 
         [Display(Name = "Birth date")]
-        //[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         public DateTime? BirthDate { get; set; }
     }
 }

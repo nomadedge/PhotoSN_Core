@@ -5,6 +5,17 @@
     <UserSecretsId>aspnet-PhotoSN.WebMvcIdentity-71261688-8EC7-4859-BE7A-B004D7DB728A</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="DefaultMedia\**" />
+    <Compile Remove="ImageStorage\**" />
+    <Content Remove="DefaultMedia\**" />
+    <Content Remove="ImageStorage\**" />
+    <EmbeddedResource Remove="DefaultMedia\**" />
+    <EmbeddedResource Remove="ImageStorage\**" />
+    <None Remove="DefaultMedia\**" />
+    <None Remove="ImageStorage\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.1" />
