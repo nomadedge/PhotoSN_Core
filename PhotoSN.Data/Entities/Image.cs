@@ -12,6 +12,6 @@ namespace PhotoSN.Data.Entities
         public DateTime Created { get; set; }
         [Required]
         public User User { get; set; }
-        public int Guid { get; set; }
+        public Guid Guid { get; set; }
     }
 }

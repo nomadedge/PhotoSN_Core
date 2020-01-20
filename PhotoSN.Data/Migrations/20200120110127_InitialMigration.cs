@@ -202,7 +202,7 @@ namespace PhotoSN.Data.Migrations
                     MimeType = table.Column<string>(maxLength: 50, nullable: false),
                     Created = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<int>(nullable: false),
-                    Guid = table.Column<int>(nullable: false)
+                    Guid = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PhotoSN.Data.Entities;
+using PhotoSN.Model.Dtos;
 using PhotoSN.Model.IdentityInputModels;
 
 namespace PhotoSN.WebMvcIdentity.AutoMapper
@@ -12,6 +13,12 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
                 .ForMember(u => u.UserName, opt => opt.MapFrom(rim => rim.Email));
 
             CreateMap<User, ManageIndexInputModel>();
+
+            CreateMap<Image, GetImageDto>()
+                .ForMember(gid => gid.UserId, opt => opt.MapFrom(i => i.User.Id))
+                .ForMember(gid => gid.Nickname, opt => opt.MapFrom(i => i.User.Nickname));
+
+            CreateMap<CreateImageDto, Image>();
         }
     }
 }

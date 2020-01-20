@@ -8,18 +8,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
+using PhotoSN.Data.Repositories;
 using PhotoSN.WebMvcIdentity.Services;
 
 namespace PhotoSN.WebMvcIdentity
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -30,9 +31,16 @@ namespace PhotoSN.WebMvcIdentity
                 .AddEntityFrameworkStores<PhotoSNDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
+
             services.AddAutoMapper(typeof(Startup));
+
             services.AddTransient<IEmailSender, SendGridEmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
+
+            services.AddScoped<IImageHelper, LocalFileSystemImageHelper>();
+            services.Configure<ImageHelperOptions>(Configuration);
+
+            services.AddScoped<IPhotoSNRepository, SqlPhotoSNRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -10,7 +10,7 @@ using PhotoSN.Data.DbContexts;
 namespace PhotoSN.Data.Migrations
 {
     [DbContext(typeof(PhotoSNDbContext))]
-    [Migration("20200118144359_InitialMigration")]
+    [Migration("20200120110127_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -256,8 +256,8 @@ namespace PhotoSN.Data.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Guid")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MimeType")
                         .IsRequired()

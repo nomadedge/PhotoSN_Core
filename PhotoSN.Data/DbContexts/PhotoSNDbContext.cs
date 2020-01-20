@@ -7,6 +7,24 @@ namespace PhotoSN.Data.DbContexts
 {
     public class PhotoSNDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
+        public DbSet<BlacklistRow> Bans { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<InPostMention> InPostMentions { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
+
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<InCommentMention> InCommentMentions { get; set; }
+        public DbSet<CommentLike> CommentLikes { get; set; }
+
+        public DbSet<Hashtag> Hashtags { get; set; }
+        public DbSet<InPostHashtag> InPostHashtags { get; set; }
+
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Avatar> Avatars { get; set; }
+        public DbSet<PostImage> PostImages { get; set; }
+
         public PhotoSNDbContext(DbContextOptions<PhotoSNDbContext> options)
             : base(options) { }
 
@@ -115,22 +133,6 @@ namespace PhotoSN.Data.DbContexts
                 .OnDelete(DeleteBehavior.NoAction);
         }
 
-        public DbSet<BlacklistRow> Bans { get; set; }
-        public DbSet<Subscription> Subscriptions { get; set; }
 
-        public DbSet<Post> Posts { get; set; }
-        public DbSet<InPostMention> InPostMentions { get; set; }
-        public DbSet<PostLike> PostLikes { get; set; }
-
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<InCommentMention> InCommentMentions { get; set; }
-        public DbSet<CommentLike> CommentLikes { get; set; }
-
-        public DbSet<Hashtag> Hashtags { get; set; }
-        public DbSet<InPostHashtag> InPostHashtags { get; set; }
-
-        public DbSet<Image> Images { get; set; }
-        public DbSet<Avatar> Avatars { get; set; }
-        public DbSet<PostImage> PostImages { get; set; }
     }
 }

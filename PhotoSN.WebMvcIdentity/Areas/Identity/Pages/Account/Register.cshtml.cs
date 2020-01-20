@@ -60,7 +60,6 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = _mapper.Map<User>(Input);
-                //var user = new User { UserName = Input.UserName, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

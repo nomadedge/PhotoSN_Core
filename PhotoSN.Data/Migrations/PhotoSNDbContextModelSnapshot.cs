@@ -254,8 +254,8 @@ namespace PhotoSN.Data.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Guid")
-                        .HasColumnType("int");
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("MimeType")
                         .IsRequired()

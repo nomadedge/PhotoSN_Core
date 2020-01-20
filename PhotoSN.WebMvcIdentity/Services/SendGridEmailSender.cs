@@ -8,16 +8,16 @@ namespace PhotoSN.WebMvcIdentity.Services
 {
     public class SendGridEmailSender : IEmailSender
     {
+        private AuthMessageSenderOptions _options; //set only via Secret Manager
+
         public SendGridEmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor)
         {
-            Options = optionsAccessor.Value;
+            _options = optionsAccessor.Value;
         }
-
-        public AuthMessageSenderOptions Options { get; } //set only via Secret Manager
 
         public Task SendEmailAsync(string email, string subject, string message)
         {
-            return Execute(Options.SendGridKey, subject, message, email);
+            return Execute(_options.SendGridKey, subject, message, email);
         }
 
         public Task Execute(string apiKey, string subject, string message, string email)
@@ -25,7 +25,7 @@ namespace PhotoSN.WebMvcIdentity.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("Bot@PhotoSN.com", Options.SendGridUser),
+                From = new EmailAddress("Bot@PhotoSN.com", _options.SendGridUser),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message
