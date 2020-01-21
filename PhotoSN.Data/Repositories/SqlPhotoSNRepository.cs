@@ -4,6 +4,8 @@ using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
 using PhotoSN.Model.Dtos;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PhotoSN.Data.Repositories
@@ -21,6 +23,24 @@ namespace PhotoSN.Data.Repositories
             _mapper = mapper;
         }
 
+        public List<int> GetAvatars(int userId)
+        {
+            var avatarIds = _photoSNDbContext.Avatars
+                .Where(a => a.UserId == userId)
+                .Select(a => a.ImageId)
+                .ToList();
+            return avatarIds;
+        }
+
+        public async Task CreateAvatarAsync(CreateAvatarDto createAvatarDto)
+        {
+            var newAvatar = _mapper.Map<Avatar>(createAvatarDto);
+
+            await _photoSNDbContext.Avatars.AddAsync(newAvatar);
+
+            await _photoSNDbContext.SaveChangesAsync();
+        }
+
         public async Task<int> CreateImageAsync(CreateImageDto createImageDto)
         {
             using (var transaction = _photoSNDbContext.Database.BeginTransaction())
@@ -28,7 +48,6 @@ namespace PhotoSN.Data.Repositories
                 try
                 {
                     var newImage = _mapper.Map<Image>(createImageDto);
-                    newImage.Guid = Guid.NewGuid();
                     newImage.User = await _photoSNDbContext.Users.FindAsync(createImageDto.UserId);
                     newImage.Created = DateTime.Now;
 

@@ -4,15 +4,17 @@ using System.Diagnostics;
 
 namespace PhotoSN.WebMvcIdentity.Controllers
 {
+    //[Route("[controller]")]
+    //[Controller]
     public class HomeController : Controller
     {
-        [HttpGet]
+        //[HttpGet("Index")]
         public IActionResult Index()
         {
             return View();
         }
 
-        [HttpGet]
+        //[HttpGet("Error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

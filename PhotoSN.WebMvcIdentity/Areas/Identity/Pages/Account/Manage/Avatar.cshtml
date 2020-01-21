@@ -1,0 +1,36 @@
+﻿@page
+@model AvatarModel
+@{
+    ViewData["Title"] = "Profile picture";
+    ViewData["ActivePage"] = ManageNavPages.Avatar;
+}
+
+<h4>@ViewData["Title"]</h4>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        
+        <form id="avatar-form" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <ul style="list-style:none; padding:0;">
+                    <li><label asp-for="Input.AvatarImageId"></label></li>
+                    <li>
+                        <img id="AvatarImage"
+                             src="@Url.Action("GetImage", "Images", new { id=Model.Input.AvatarImageId })"
+                             onerror="this.onerror=null;this.src='https://images.pexels.com/photos/2769325/pexels-photo-2769325.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=150&w=150&fit=crop';" />
+                    </li>
+                </ul>
+            </div>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.AvatarImage"></label>
+                <input asp-for="Input.AvatarImage" />
+            </div>
+            <button id="update-avatar-button" type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

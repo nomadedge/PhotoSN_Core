@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,13 +18,15 @@ namespace PhotoSN.WebMvcIdentity.Services
 
         private string GetFullFileName(Guid guid)
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), _imageHelperOptions.ImageStoragePath, guid.ToString("N"));
+            return Path.Combine(Directory.GetCurrentDirectory(), _imageHelperOptions.ImageStoragePath, guid.ToString());
         }
 
-        public async Task SaveImageAsync(byte[] byteArray, Guid guid)
+        public async Task SaveImageAsync(IFormFile image, Guid guid)
         {
             var fileName = GetFullFileName(guid);
-            await File.WriteAllBytesAsync(fileName, byteArray);
+            var fileStream = new FileStream(fileName, FileMode.Create);
+            await image.CopyToAsync(fileStream);
+            fileStream.Close();
         }
 
         public async Task<byte[]> ReadImageAsync(Guid guid)

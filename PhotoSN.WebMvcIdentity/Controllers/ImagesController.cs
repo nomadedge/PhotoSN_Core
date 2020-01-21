@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace PhotoSN.WebMvcIdentity.Controllers
 {
-    public class ImageController : Controller
+    //[Route("[controller]")]
+    //[Controller]
+    public class ImagesController : Controller
     {
         private readonly IPhotoSNRepository _photoSNRepository;
         private readonly IImageHelper _imageHelper;
 
-        public ImageController(
+        public ImagesController(
             IPhotoSNRepository photoSNRepository,
             IImageHelper imageHelper)
         {
@@ -19,7 +21,7 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             _imageHelper = imageHelper;
         }
 
-        [HttpGet]
+        //[HttpGet("GetImage/{imageId}")]
         public async Task<IActionResult> GetImage(int id)
         {
             try

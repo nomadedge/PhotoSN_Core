@@ -19,6 +19,8 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
                 .ForMember(gid => gid.Nickname, opt => opt.MapFrom(i => i.User.Nickname));
 
             CreateMap<CreateImageDto, Image>();
+
+            CreateMap<CreateAvatarDto, Avatar>();
         }
     }
 }
