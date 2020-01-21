@@ -39,5 +39,16 @@ namespace PhotoSN.WebMvcIdentity.Services
             }
             throw new FileNotFoundException($"{fileName} not found.");
         }
+
+        public void DeleteImageAsync(Guid guid)
+        {
+            var fileName = GetFullFileName(guid);
+            var fileInfo = new FileInfo(fileName);
+            if (fileInfo != null && fileInfo.Exists)
+            {
+                File.Delete(fileInfo.FullName);
+            }
+            throw new FileNotFoundException($"{fileName} not found.");
+        }
     }
 }

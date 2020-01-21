@@ -23,22 +23,99 @@ namespace PhotoSN.Data.Repositories
             _mapper = mapper;
         }
 
-        public List<int> GetAvatars(int userId)
+        public async Task<List<int>> GetAvatarsAsync(int userId)
         {
-            var avatarIds = _photoSNDbContext.Avatars
+            var avatarIds = await _photoSNDbContext.Avatars
                 .Where(a => a.UserId == userId)
                 .Select(a => a.ImageId)
-                .ToList();
+                .ToListAsync();
             return avatarIds;
         }
 
-        public async Task CreateAvatarAsync(CreateAvatarDto createAvatarDto)
+        public async Task<int?> GetCurrentAvatarAsync(int userId)
         {
-            var newAvatar = _mapper.Map<Avatar>(createAvatarDto);
+            var avatar = await _photoSNDbContext.Avatars
+                .FirstOrDefaultAsync(a => (a.UserId == userId && a.IsCurrent == true));
+            if (avatar != null)
+            {
+                return avatar.ImageId;
+            }
+            return null;
+        }
 
-            await _photoSNDbContext.Avatars.AddAsync(newAvatar);
+        public async Task CreateAvatarAsync(AvatarDto avatarDto)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var currentAvatar = await _photoSNDbContext.Avatars
+                        .FirstOrDefaultAsync(a => (a.UserId == avatarDto.UserId && a.IsCurrent == true));
+                    if (currentAvatar != null)
+                    {
+                        currentAvatar.IsCurrent = false;
+                    }
 
-            await _photoSNDbContext.SaveChangesAsync();
+                    var newAvatar = _mapper.Map<Avatar>(avatarDto);
+                    newAvatar.IsCurrent = true;
+
+                    await _photoSNDbContext.Avatars.AddAsync(newAvatar);
+
+                    await _photoSNDbContext.SaveChangesAsync();
+
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
+        public async Task DeleteAvatarAsync(AvatarDto avatarDto)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var avatar = await _photoSNDbContext.Avatars
+                        .FirstOrDefaultAsync(a => (a.UserId == avatarDto.UserId && a.ImageId == avatarDto.ImageId));
+                    if (avatar == null)
+                    {
+                        throw new ArgumentException("Avatar not found.");
+                    }
+
+                    if (avatar.IsCurrent == true)
+                    {
+                        var avatars = _photoSNDbContext.Avatars
+                            .Where(a => a.UserId == avatarDto.UserId)
+                            .ToList();
+                        if (avatars.Count != 1)
+                        {
+                            if (avatars.Last().IsCurrent != true)
+                            {
+                                avatars.Last().IsCurrent = true;
+                            }
+                            else
+                            {
+                                avatars[avatars.Count - 2].IsCurrent = true;
+                            }
+                        }
+                    }
+
+                    _photoSNDbContext.Avatars.Remove(avatar);
+
+                    await _photoSNDbContext.SaveChangesAsync();
+
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
         }
 
         public async Task<int> CreateImageAsync(CreateImageDto createImageDto)
@@ -84,6 +161,32 @@ namespace PhotoSN.Data.Repositories
             catch (Exception e)
             {
                 throw e;
+            }
+        }
+
+        public async Task DeleteImageAsync(int imageId)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var image = await _photoSNDbContext.Images
+                        .FindAsync(imageId);
+                    if (image == null)
+                    {
+                        throw new ArgumentException("Image not found.");
+                    }
+                    _photoSNDbContext.Images.Remove(image);
+
+                    await _photoSNDbContext.SaveChangesAsync();
+
+                    transaction.Commit();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
             }
         }
     }

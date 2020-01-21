@@ -13,6 +13,8 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
 
         public static string Avatar => "Avatar";
 
+        public static string AvatarsHistory => "AvatarsHistory";
+
         public static string ExternalLogins => "ExternalLogins";
 
         public static string PersonalData => "PersonalData";
@@ -26,6 +28,8 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
 
         public static string AvatarNavClass(ViewContext viewContext) => PageNavClass(viewContext, Avatar);
+
+        public static string AvatarsHistoryNavClass(ViewContext viewContext) => PageNavClass(viewContext, AvatarsHistory);
 
         public static string ExternalLoginsNavClass(ViewContext viewContext) => PageNavClass(viewContext, ExternalLogins);
 

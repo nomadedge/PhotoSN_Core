@@ -7,7 +7,6 @@ using PhotoSN.Model.Dtos;
 using PhotoSN.Model.IdentityInputModels;
 using PhotoSN.WebMvcIdentity.Services;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
@@ -39,13 +38,9 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
             Input = new ManageAvatarInputModel();
         }
 
-        private void Load(User user)
+        private async Task LoadAsync(User user)
         {
-            var avatarIds = _photoSNRepository.GetAvatars(user.Id);
-            if (avatarIds.Any())
-            {
-                Input.AvatarImageId = avatarIds.Last();
-            }
+            Input.AvatarImageId = await _photoSNRepository.GetCurrentAvatarAsync(user.Id);
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -56,7 +51,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            Load(user);
+            await LoadAsync(user);
             return Page();
         }
 
@@ -70,7 +65,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
 
             if (!ModelState.IsValid)
             {
-                Load(user);
+                await LoadAsync(user);
                 return Page();
             }
 
@@ -85,7 +80,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
             };
             var newImageId = await _photoSNRepository.CreateImageAsync(createImageDto);
 
-            var createAvatarDto = new CreateAvatarDto
+            var createAvatarDto = new AvatarDto
             {
                 UserId = user.Id,
                 ImageId = newImageId

@@ -8,5 +8,6 @@ namespace PhotoSN.WebMvcIdentity.Services
     {
         Task<byte[]> ReadImageAsync(Guid guid);
         Task SaveImageAsync(IFormFile image, Guid guid);
+        void DeleteImageAsync(Guid guid);
     }
 }

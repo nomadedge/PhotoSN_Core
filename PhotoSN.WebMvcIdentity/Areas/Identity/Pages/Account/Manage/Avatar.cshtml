@@ -9,7 +9,8 @@
 <partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="row">
     <div class="col-md-6">
-        
+        <p hidden="@(Model.Input.AvatarImageId == null)">If you're looking for the option to delete your profile picture you can find it on "Profile pictures history" tab.</p>
+        <p hidden="@(Model.Input.AvatarImageId != null)">You haven't uploaded a profile picture yet and using default avatar.</p>
         <form id="avatar-form" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <ul style="list-style:none; padding:0;">
