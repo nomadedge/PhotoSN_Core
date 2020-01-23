@@ -70,7 +70,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
             }
 
             var guid = Guid.NewGuid();
-            await _imageHelper.SaveImageAsync(Input.AvatarImage, guid);
+            await _imageHelper.SaveAvatarAsync(Input.AvatarImage, guid);
 
             var createImageDto = new CreateImageDto
             {

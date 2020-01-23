@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -29,6 +32,47 @@ namespace PhotoSN.WebMvcIdentity.Services
             fileStream.Close();
         }
 
+        public async Task SaveAvatarAsync(IFormFile image, Guid guid)
+        {
+            var tempFileName = GetFullFileName(guid) + "Temp";
+            var constFileName = GetFullFileName(guid);
+            var fileStream = new FileStream(tempFileName, FileMode.Create);
+            await image.CopyToAsync(fileStream);
+            fileStream.Close();
+
+            using (var tempFileStream = File.OpenRead(tempFileName))
+            {
+                using (var constFileStream = File.OpenWrite(constFileName))
+                {
+                    using (var avatar = Image.Load(tempFileStream))
+                    {
+                        int newWidth, newHeight;
+                        if (avatar.Width > avatar.Height)
+                        {
+                            newHeight = 300;
+                            newWidth = avatar.Width / avatar.Height * 300;
+                        }
+                        else
+                        {
+                            newWidth = 300;
+                            newHeight = avatar.Height / avatar.Width * 300;
+                        }
+
+                        //avatar.Mutate(ipc => ipc.Resize(newWidth, newHeight));
+                        avatar.Mutate(ipc => ipc.Resize(new ResizeOptions
+                        {
+                            Mode = ResizeMode.Crop,
+                            Size = new Size(300)
+                        }));
+
+                        avatar.SaveAsPng(constFileStream);
+                    }
+                }
+            }
+
+            File.Delete(tempFileName);
+        }
+
         public async Task<byte[]> ReadImageAsync(Guid guid)
         {
             var fileName = GetFullFileName(guid);
@@ -44,11 +88,11 @@ namespace PhotoSN.WebMvcIdentity.Services
         {
             var fileName = GetFullFileName(guid);
             var fileInfo = new FileInfo(fileName);
-            if (fileInfo != null && fileInfo.Exists)
+            if (fileInfo == null || !fileInfo.Exists)
             {
-                File.Delete(fileInfo.FullName);
+                throw new FileNotFoundException($"{fileName} not found.");
             }
-            throw new FileNotFoundException($"{fileName} not found.");
+            File.Delete(fileInfo.FullName);
         }
     }
 }
