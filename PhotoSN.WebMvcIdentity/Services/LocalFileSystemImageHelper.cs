@@ -46,19 +46,6 @@ namespace PhotoSN.WebMvcIdentity.Services
                 {
                     using (var avatar = Image.Load(tempFileStream))
                     {
-                        int newWidth, newHeight;
-                        if (avatar.Width > avatar.Height)
-                        {
-                            newHeight = 300;
-                            newWidth = avatar.Width / avatar.Height * 300;
-                        }
-                        else
-                        {
-                            newWidth = 300;
-                            newHeight = avatar.Height / avatar.Width * 300;
-                        }
-
-                        //avatar.Mutate(ipc => ipc.Resize(newWidth, newHeight));
                         avatar.Mutate(ipc => ipc.Resize(new ResizeOptions
                         {
                             Mode = ResizeMode.Crop,
