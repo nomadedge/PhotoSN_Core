@@ -25,7 +25,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
             _mapper = mapper;
         }
 
-        public string Username { get; set; }
+        public string Email { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -37,7 +37,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
         {
             var userName = await _userManager.GetUserNameAsync(user);
 
-            Username = userName;
+            Email = userName;
 
             Input = _mapper.Map<ManageIndexInputModel>(user);
         }
