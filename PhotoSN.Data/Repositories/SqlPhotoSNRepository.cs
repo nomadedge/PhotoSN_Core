@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
 using PhotoSN.Model.Dtos;
+using PhotoSN.Model.IdentityInputModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,13 +24,13 @@ namespace PhotoSN.Data.Repositories
             _mapper = mapper;
         }
 
-        public async Task<List<int>> GetAvatarsAsync(int userId)
+        public async Task<List<AvatarsHistoryInputModel>> GetAvatarsAsync(int userId)
         {
-            var avatarIds = await _photoSNDbContext.Avatars
+            var avatars = await _photoSNDbContext.Avatars
                 .Where(a => a.UserId == userId)
-                .Select(a => a.ImageId)
                 .ToListAsync();
-            return avatarIds;
+
+            return _mapper.Map<List<AvatarsHistoryInputModel>>(avatars);
         }
 
         public async Task<int?> GetCurrentAvatarAsync(int userId)
@@ -63,7 +64,7 @@ namespace PhotoSN.Data.Repositories
 
                     await _photoSNDbContext.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
@@ -108,7 +109,7 @@ namespace PhotoSN.Data.Repositories
 
                     await _photoSNDbContext.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
@@ -118,8 +119,50 @@ namespace PhotoSN.Data.Repositories
             }
         }
 
+        public async Task ChangeCurrentAvatarAsync(AvatarDto avatarDto)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var avatar = await _photoSNDbContext.Avatars
+                        .FirstOrDefaultAsync(a => (a.UserId == avatarDto.UserId && a.ImageId == avatarDto.ImageId));
+                    if (avatar == null)
+                    {
+                        throw new ArgumentException("Avatar not found.");
+                    }
+                    if (avatar.IsCurrent)
+                    {
+                        throw new InvalidOperationException("Avatar is already current.");
+                    }
+
+                    var currentAvatar = await _photoSNDbContext.Avatars
+                        .FirstOrDefaultAsync(a => (a.UserId == avatarDto.UserId && a.IsCurrent == true));
+                    if (avatar != null)
+                    {
+                         currentAvatar.IsCurrent = false;
+                    }
+
+                    avatar.IsCurrent = true;
+
+                    await _photoSNDbContext.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+                }
+                catch(Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
         public async Task<int> CreateImageAsync(CreateImageDto createImageDto)
         {
+            if (!createImageDto.MimeType.Contains("image"))
+            {
+                throw new ArgumentException("File type should be image");
+            }
             using (var transaction = _photoSNDbContext.Database.BeginTransaction())
             {
                 try
@@ -132,7 +175,7 @@ namespace PhotoSN.Data.Repositories
 
                     await _photoSNDbContext.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
 
                     return newImage.ImageId;
                 }
@@ -180,7 +223,7 @@ namespace PhotoSN.Data.Repositories
 
                     await _photoSNDbContext.SaveChangesAsync();
 
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {

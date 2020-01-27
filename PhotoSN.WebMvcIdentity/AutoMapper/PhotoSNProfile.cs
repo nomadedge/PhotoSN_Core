@@ -21,6 +21,8 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
             CreateMap<CreateImageDto, Image>();
 
             CreateMap<AvatarDto, Avatar>();
+
+            CreateMap<Avatar, AvatarsHistoryInputModel>();
         }
     }
 }

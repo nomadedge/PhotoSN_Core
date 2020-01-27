@@ -63,6 +63,11 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            if (!Input.AvatarImage.ContentType.Contains("image"))
+            {
+                ModelState.AddModelError("FileType", "File type should be image.");
+            }
+
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
