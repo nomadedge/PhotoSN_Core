@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using PhotoSN.Data.Entities;
-using PhotoSN.Model.IdentityInputModels;
+using PhotoSN.WebMvcIdentity.IdentityViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,7 +41,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public RegisterInputModel Input { get; set; }
+        public RegisterViewModel RegisterViewModel { get; set; }
 
         public string ReturnUrl { get; set; }
 
@@ -59,8 +59,8 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = _mapper.Map<User>(Input);
-                var result = await _userManager.CreateAsync(user, Input.Password);
+                var user = _mapper.Map<User>(RegisterViewModel);
+                var result = await _userManager.CreateAsync(user, RegisterViewModel.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
@@ -73,12 +73,12 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    await _emailSender.SendEmailAsync(RegisterViewModel.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email });
+                        return RedirectToPage("RegisterConfirmation", new { email = RegisterViewModel.Email });
                     }
                     else
                     {
@@ -92,7 +92,6 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }

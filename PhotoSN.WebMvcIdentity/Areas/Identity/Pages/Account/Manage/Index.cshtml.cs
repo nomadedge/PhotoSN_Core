@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PhotoSN.Data.Entities;
-using PhotoSN.Model.IdentityInputModels;
+using PhotoSN.WebMvcIdentity.IdentityViewModels;
 using System;
 using System.Threading.Tasks;
 
@@ -31,7 +31,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
         public string StatusMessage { get; set; }
 
         [BindProperty]
-        public ManageIndexInputModel Input { get; set; }
+        public ManageIndexViewModel ManageIndexViewModel { get; set; }
 
         private async Task LoadAsync(User user)
         {
@@ -39,7 +39,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
 
             Email = userName;
 
-            Input = _mapper.Map<ManageIndexInputModel>(user);
+            ManageIndexViewModel = _mapper.Map<ManageIndexViewModel>(user);
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -68,10 +68,10 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            user.Nickname = Input.Nickname;
-            user.IsPrivate = Input.IsPrivate;
-            user.Bio = Input.Bio;
-            user.BirthDate = Input.BirthDate;
+            user.Nickname = ManageIndexViewModel.Nickname;
+            user.IsPrivate = ManageIndexViewModel.IsPrivate;
+            user.Bio = ManageIndexViewModel.Bio;
+            user.BirthDate = ManageIndexViewModel.BirthDate;
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)

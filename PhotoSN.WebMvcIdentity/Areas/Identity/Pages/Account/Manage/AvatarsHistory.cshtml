@@ -10,14 +10,14 @@
 
 <div class="row">
     <div class="col-md-6">
-        <p hidden="@(!Model.AvatarsHistoryInputModels.Any())">If you're looking for the option to upload a new profile picture you can find it on "Profile picture" tab.</p>
-        <p hidden="@(Model.AvatarsHistoryInputModels.Any())">You haven't uploaded a profile picture yet. You can do it on "Profile picture" tab.</p>
+        <p hidden="@(!Model.ManageAvatarsHistoryViewModels.Any())">If you're looking for the option to upload a new profile picture you can find it on "Profile picture" tab.</p>
+        <p hidden="@(Model.ManageAvatarsHistoryViewModels.Any())">You haven't uploaded a profile picture yet. You can do it on "Profile picture" tab.</p>
         <form id="avatar-form" method="post">
             <input asp-for="@Model.ImageId" type="hidden" id="imageId" />
             <input asp-for="@Model.IsOperationChange" type="hidden" id="isOperationChange" />
             <div class="form-group">
                 <ul>
-                    @foreach (var avatarsHistoryInputModel in Model.AvatarsHistoryInputModels)
+                    @foreach (var avatarsHistoryInputModel in Model.ManageAvatarsHistoryViewModels)
                     {
                         <li>
                             <ul style="list-style:none; padding:0;">

@@ -1,10 +1,11 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PhotoSN.Data.Entities;
 using PhotoSN.Data.Repositories;
 using PhotoSN.Model.Dtos;
-using PhotoSN.Model.IdentityInputModels;
+using PhotoSN.WebMvcIdentity.IdentityViewModels;
 using PhotoSN.WebMvcIdentity.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IImageHelper _imageHelper;
+        private readonly IMapper _mapper;
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -27,24 +29,27 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
         [BindProperty]
         public bool IsOperationChange { get; set; }
 
-        public List<AvatarsHistoryInputModel> AvatarsHistoryInputModels { get; set; }
+        public List<ManageAvatarsHistoryViewModel> ManageAvatarsHistoryViewModels { get; set; }
 
         public AvatarsHistoryModel(
             IPhotoSNRepository photoSNRepository,
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            IImageHelper imageHelper)
+            IImageHelper imageHelper,
+            IMapper mapper)
         {
             _photoSNRepository = photoSNRepository;
             _userManager = userManager;
             _signInManager = signInManager;
             _imageHelper = imageHelper;
+            _mapper = mapper;
         }
 
         private async Task LoadAsync(User user)
         {
-            AvatarsHistoryInputModels = await _photoSNRepository.GetAvatarsAsync(user.Id);
-            AvatarsHistoryInputModels.Reverse();
+            var avatarsHistoryDtos = await _photoSNRepository.GetAvatarsAsync(user.Id);
+            ManageAvatarsHistoryViewModels = _mapper.Map<List<ManageAvatarsHistoryViewModel>>(avatarsHistoryDtos);
+            ManageAvatarsHistoryViewModels.Reverse();
         }
 
         public async Task<IActionResult> OnGetAsync()

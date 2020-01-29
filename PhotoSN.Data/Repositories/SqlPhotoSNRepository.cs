@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
 using PhotoSN.Model.Dtos;
-using PhotoSN.Model.IdentityInputModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +23,13 @@ namespace PhotoSN.Data.Repositories
             _mapper = mapper;
         }
 
-        public async Task<List<AvatarsHistoryInputModel>> GetAvatarsAsync(int userId)
+        public async Task<List<AvatarsHistoryDto>> GetAvatarsAsync(int userId)
         {
             var avatars = await _photoSNDbContext.Avatars
                 .Where(a => a.UserId == userId)
                 .ToListAsync();
 
-            return _mapper.Map<List<AvatarsHistoryInputModel>>(avatars);
+            return _mapper.Map<List<AvatarsHistoryDto>>(avatars);
         }
 
         public async Task<int?> GetCurrentAvatarAsync(int userId)
@@ -140,7 +139,7 @@ namespace PhotoSN.Data.Repositories
                         .FirstOrDefaultAsync(a => (a.UserId == avatarDto.UserId && a.IsCurrent == true));
                     if (avatar != null)
                     {
-                         currentAvatar.IsCurrent = false;
+                        currentAvatar.IsCurrent = false;
                     }
 
                     avatar.IsCurrent = true;
@@ -149,7 +148,7 @@ namespace PhotoSN.Data.Repositories
 
                     await transaction.CommitAsync();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     transaction.Rollback();
                     throw e;

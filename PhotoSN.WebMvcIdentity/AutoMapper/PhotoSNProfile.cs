@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using PhotoSN.Data.Entities;
 using PhotoSN.Model.Dtos;
-using PhotoSN.Model.IdentityInputModels;
+using PhotoSN.WebMvcIdentity.IdentityViewModels;
 
 namespace PhotoSN.WebMvcIdentity.AutoMapper
 {
@@ -9,10 +9,10 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
     {
         public PhotoSNProfile()
         {
-            CreateMap<RegisterInputModel, User>()
-                .ForMember(u => u.UserName, opt => opt.MapFrom(rim => rim.Email));
+            CreateMap<RegisterViewModel, User>()
+                .ForMember(u => u.UserName, opt => opt.MapFrom(rvm => rvm.Email));
 
-            CreateMap<User, ManageIndexInputModel>();
+            CreateMap<User, ManageIndexViewModel>();
 
             CreateMap<Image, GetImageDto>()
                 .ForMember(gid => gid.UserId, opt => opt.MapFrom(i => i.User.Id))
@@ -22,7 +22,9 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
 
             CreateMap<AvatarDto, Avatar>();
 
-            CreateMap<Avatar, AvatarsHistoryInputModel>();
+            CreateMap<Avatar, AvatarsHistoryDto>();
+
+            CreateMap<AvatarsHistoryDto, ManageAvatarsHistoryViewModel>();
         }
     }
 }

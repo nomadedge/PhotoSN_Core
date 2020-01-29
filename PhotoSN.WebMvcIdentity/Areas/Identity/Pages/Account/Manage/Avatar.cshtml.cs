@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using PhotoSN.Data.Entities;
 using PhotoSN.Data.Repositories;
 using PhotoSN.Model.Dtos;
-using PhotoSN.Model.IdentityInputModels;
+using PhotoSN.WebMvcIdentity.IdentityViewModels;
 using PhotoSN.WebMvcIdentity.Services;
 using System;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
         public string StatusMessage { get; set; }
 
         [BindProperty]
-        public ManageAvatarInputModel Input { get; set; }
+        public ManageAvatarViewModel ManageAvatarViewModel { get; set; }
 
         public AvatarModel(
             IPhotoSNRepository photoSNRepository,
@@ -35,12 +35,12 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
             _imageHelper = imageHelper;
 
-            Input = new ManageAvatarInputModel();
+            ManageAvatarViewModel = new ManageAvatarViewModel();
         }
 
         private async Task LoadAsync(User user)
         {
-            Input.AvatarImageId = await _photoSNRepository.GetCurrentAvatarAsync(user.Id);
+            ManageAvatarViewModel.AvatarImageId = await _photoSNRepository.GetCurrentAvatarAsync(user.Id);
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -63,7 +63,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            if (!Input.AvatarImage.ContentType.Contains("image"))
+            if (!ManageAvatarViewModel.AvatarImage.ContentType.Contains("image"))
             {
                 ModelState.AddModelError("FileType", "File type should be image.");
             }
@@ -75,13 +75,13 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account.Manage
             }
 
             var guid = Guid.NewGuid();
-            await _imageHelper.SaveAvatarAsync(Input.AvatarImage, guid);
+            await _imageHelper.SaveAvatarAsync(ManageAvatarViewModel.AvatarImage, guid);
 
             var createImageDto = new CreateImageDto
             {
                 Guid = guid,
                 UserId = user.Id,
-                MimeType = Input.AvatarImage.ContentType
+                MimeType = ManageAvatarViewModel.AvatarImage.ContentType
             };
             var newImageId = await _photoSNRepository.CreateImageAsync(createImageDto);
 

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace PhotoSN.Model.IdentityInputModels
+namespace PhotoSN.WebMvcIdentity.IdentityViewModels
 {
-    public class ManageAvatarInputModel
+    public class ManageAvatarViewModel
     {
         [Display(Name = "Current profile picture")]
         public int? AvatarImageId { get; set; }

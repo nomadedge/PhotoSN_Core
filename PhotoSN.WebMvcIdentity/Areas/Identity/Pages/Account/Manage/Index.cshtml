@@ -16,25 +16,25 @@
                 <input asp-for="Email" class="form-control" disabled />
             </div>
             <div class="form-group">
-                <label asp-for="Input.Nickname"></label>
-                <input asp-for="Input.Nickname" class="form-control" />
-                <span asp-validation-for="Input.Nickname" class="text-danger"></span>
+                <label asp-for="ManageIndexViewModel.Nickname"></label>
+                <input asp-for="ManageIndexViewModel.Nickname" class="form-control" />
+                <span asp-validation-for="ManageIndexViewModel.Nickname" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="checkbox">
-                    <input asp-for="Input.IsPrivate" />
-                    <label asp-for="Input.IsPrivate"></label>
+                    <input asp-for="ManageIndexViewModel.IsPrivate" />
+                    <label asp-for="ManageIndexViewModel.IsPrivate"></label>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="Input.Bio"></label>
-                <textarea asp-for="Input.Bio" class="form-control" rows="5" style="resize: none;"></textarea>
-                <span asp-validation-for="Input.Bio" class="text-danger"></span>
+                <label asp-for="ManageIndexViewModel.Bio"></label>
+                <textarea asp-for="ManageIndexViewModel.Bio" class="form-control" rows="5" style="resize: none;"></textarea>
+                <span asp-validation-for="ManageIndexViewModel.Bio" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Input.BirthDate"></label>
-                <input asp-for="Input.BirthDate" class="form-control" type="date" />
-                <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                <label asp-for="ManageIndexViewModel.BirthDate"></label>
+                <input asp-for="ManageIndexViewModel.BirthDate" class="form-control" type="date" />
+                <span asp-validation-for="ManageIndexViewModel.BirthDate" class="text-danger"></span>
             </div>
             <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
         </form>

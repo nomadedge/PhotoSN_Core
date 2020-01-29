@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PhotoSN.Model.IdentityInputModels
+namespace PhotoSN.WebMvcIdentity.IdentityViewModels
 {
-    public class ManageIndexInputModel
+    public class ManageIndexViewModel
     {
         [Required]
         [StringLength(20, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]

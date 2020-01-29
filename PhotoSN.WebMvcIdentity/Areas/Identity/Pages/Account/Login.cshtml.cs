@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using PhotoSN.Data.Entities;
-using PhotoSN.Model.IdentityInputModels;
+using PhotoSN.WebMvcIdentity.IdentityViewModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +29,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public LoginInputModel Input { get; set; }
+        public LoginViewModel LoginViewModel { get; set; }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
@@ -63,7 +63,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                var result = await _signInManager.PasswordSignInAsync(LoginViewModel.Email, LoginViewModel.Password, LoginViewModel.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -71,7 +71,7 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = LoginViewModel.RememberMe });
                 }
                 if (result.IsLockedOut)
                 {
@@ -85,7 +85,6 @@ namespace PhotoSN.WebMvcIdentity.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
     }

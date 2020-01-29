@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PhotoSN.Model.IdentityInputModels
+namespace PhotoSN.WebMvcIdentity.IdentityViewModels
 {
-    public class RegisterInputModel
+    public class RegisterViewModel
     {
         [Required]
         [EmailAddress]

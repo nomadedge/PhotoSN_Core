@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PhotoSN.WebMvcIdentity.Models;
+using PhotoSN.WebMvcIdentity.ViewModels;
 using System.Diagnostics;
 
 namespace PhotoSN.WebMvcIdentity.Controllers
