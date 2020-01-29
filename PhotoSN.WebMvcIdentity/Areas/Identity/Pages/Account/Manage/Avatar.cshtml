@@ -26,7 +26,7 @@
             <div class="form-group">
                 <p>New profile picture will be cropped to 300x300 pixels, so make sure that content your want to see as your profile picture is centered on the photo.</p>
                 <label asp-for="ManageAvatarViewModel.AvatarImage"></label>
-                <input asp-for="ManageAvatarViewModel.AvatarImage" />
+                <input asp-for="ManageAvatarViewModel.AvatarImage" accept="image/*" />
             </div>
             <button id="update-avatar-button" type="submit" class="btn btn-primary">Save</button>
         </form>

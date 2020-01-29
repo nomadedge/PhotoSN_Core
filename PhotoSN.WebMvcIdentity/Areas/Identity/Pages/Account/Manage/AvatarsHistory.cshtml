@@ -55,14 +55,15 @@
     </div>
 </div>
 
-
-<script>
-    function ChangeAvatar(imageId) {
-        $("#imageId").val(imageId);
-        $("#isOperationChange").val(true);
-    }
-    function DeleteAvatar(imageId) {
-        $("#imageId").val(imageId);
-        $("#isOperationChange").val(false);
-    }
-</script>
+@section Scripts{
+    <script>
+        function ChangeAvatar(imageId) {
+            $("#imageId").val(imageId);
+            $("#isOperationChange").val(true);
+        }
+        function DeleteAvatar(imageId) {
+            $("#imageId").val(imageId);
+            $("#isOperationChange").val(false);
+        }
+    </script>
+}
