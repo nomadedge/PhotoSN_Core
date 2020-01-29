@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
-using PhotoSN.Model.Dtos;
+using PhotoSN.Data.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using PhotoSN.Data.Entities;
-using PhotoSN.Model.Dtos;
+using PhotoSN.Data.Dtos;
 using PhotoSN.WebMvcIdentity.IdentityViewModels;
 
 namespace PhotoSN.WebMvcIdentity.AutoMapper

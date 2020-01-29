@@ -1,4 +1,4 @@
-﻿using PhotoSN.Model.Dtos;
+﻿using PhotoSN.Data.Dtos;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

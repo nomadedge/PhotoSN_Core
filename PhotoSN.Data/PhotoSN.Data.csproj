@@ -20,8 +20,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\PhotoSN.Model\PhotoSN.Model.csproj" />
-  </ItemGroup>
-
 </Project>

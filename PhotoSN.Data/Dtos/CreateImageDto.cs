@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PhotoSN.Model.Dtos
+namespace PhotoSN.Data.Dtos
 {
     public class CreateImageDto
     {

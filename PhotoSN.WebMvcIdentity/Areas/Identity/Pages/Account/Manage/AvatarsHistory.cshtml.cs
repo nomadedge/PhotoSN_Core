@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PhotoSN.Data.Entities;
 using PhotoSN.Data.Repositories;
-using PhotoSN.Model.Dtos;
+using PhotoSN.Data.Dtos;
 using PhotoSN.WebMvcIdentity.IdentityViewModels;
 using PhotoSN.WebMvcIdentity.Services;
 using System.Collections.Generic;
