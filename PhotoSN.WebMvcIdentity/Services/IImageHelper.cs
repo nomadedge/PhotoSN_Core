@@ -7,8 +7,8 @@ namespace PhotoSN.WebMvcIdentity.Services
     public interface IImageHelper
     {
         Task<byte[]> ReadImageAsync(Guid guid);
-        Task SaveImageAsync(IFormFile image, Guid guid);
-        Task SaveAvatarAsync(IFormFile image, Guid guid);
+        Task SaveImageAsync(IFormFile imageFile, Guid guid);
+        Task SaveAvatarAsync(IFormFile imageFile, Guid guid);
         void DeleteImage(Guid guid);
     }
 }

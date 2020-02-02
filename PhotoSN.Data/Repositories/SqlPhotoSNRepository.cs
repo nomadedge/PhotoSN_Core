@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PhotoSN.Data.DbContexts;
-using PhotoSN.Data.Entities;
 using PhotoSN.Data.Dtos;
+using PhotoSN.Data.Entities;
+using PhotoSN.Data.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -223,6 +224,89 @@ namespace PhotoSN.Data.Repositories
                     await _photoSNDbContext.SaveChangesAsync();
 
                     await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
+        public async Task<int> CreatePostAsync(CreatePostDto createPostDto)
+        {
+            if (createPostDto.ImageIds != null &&
+                createPostDto.ImageIds.Any() &&
+                createPostDto.ImageIds.Count < 10)
+            {
+                throw new ArgumentOutOfRangeException("Post must contain from 1 to 10 pictures.");
+            }
+
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = await _photoSNDbContext.Users
+                        .FirstOrDefaultAsync(u => u.Id == createPostDto.UserId);
+                    if (user == null)
+                    {
+                        throw new ArgumentException($"User with id {createPostDto.UserId} does not exist.");
+                    }
+
+                    var images = await _photoSNDbContext.Images
+                        .Include(i => i.User)
+                        .Where(i => createPostDto.ImageIds.Contains(i.ImageId) && i.User.Id == createPostDto.UserId)
+                        .ToListAsync();
+                    if (images.Count != createPostDto.ImageIds.Count)
+                    {
+                        throw new ArgumentException("All images must be presented in DB and be uploaded by the same user who is creating the post.");
+                    }
+
+                    var post = new Post
+                    {
+                        User = user,
+                        Description = createPostDto.Description,
+                        Created = DateTime.Now
+                    };
+                    await _photoSNDbContext.Posts.AddAsync(post);
+
+                    byte orderNumber = 1;
+                    foreach (var image in images)
+                    {
+                        var postImage = new PostImage
+                        {
+                            Image = image,
+                            OrderNumber = orderNumber,
+                            Post = post
+                        };
+                        await _photoSNDbContext.PostImages.AddAsync(postImage);
+                        orderNumber++;
+                    }
+
+                    var hashtags = HashtagService.GetHashtags(createPostDto.Description);
+                    foreach (var hashtag in hashtags)
+                    {
+                        var existingHashtag = await _photoSNDbContext.Hashtags
+                            .FirstOrDefaultAsync(h => h.Text == hashtag);
+                        var inPostHashtag = new InPostHashtag();
+                        if (existingHashtag == null)
+                        {
+                            var newHashtag = new Hashtag { Text = hashtag };
+                            _photoSNDbContext.Hashtags.Add(newHashtag);
+                            inPostHashtag.Hashtag = newHashtag;
+                        }
+                        else
+                        {
+                            inPostHashtag.Hashtag = existingHashtag;
+                        }
+                        inPostHashtag.Post = post;
+                        _photoSNDbContext.InPostHashtags.Add(inPostHashtag);
+                    }
+
+                    await _photoSNDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return post.PostId;
                 }
                 catch (Exception e)
                 {

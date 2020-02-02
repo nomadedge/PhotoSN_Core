@@ -11,8 +11,6 @@ namespace PhotoSN.Data.Entities
         {
             Posts = new HashSet<Post>();
             Comments = new HashSet<Comment>();
-            InPostMentions = new HashSet<InPostMention>();
-            InCommentMentions = new HashSet<InCommentMention>();
             PostLikes = new HashSet<PostLike>();
             CommentLikes = new HashSet<CommentLike>();
             Blacklist = new HashSet<BlacklistRow>();
@@ -28,13 +26,12 @@ namespace PhotoSN.Data.Entities
         public string Nickname { get; set; }
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; }
+        public DateTime Created { get; set; }
         [StringLength(300)]
         public string Bio { get; set; }
         public bool IsPrivate { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
-        public virtual ICollection<InPostMention> InPostMentions { get; set; }
-        public virtual ICollection<InCommentMention> InCommentMentions { get; set; }
         public virtual ICollection<PostLike> PostLikes { get; set; }
         public virtual ICollection<CommentLike> CommentLikes { get; set; }
         public virtual ICollection<BlacklistRow> Blacklist { get; set; }

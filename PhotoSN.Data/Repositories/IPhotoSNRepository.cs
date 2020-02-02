@@ -14,5 +14,6 @@ namespace PhotoSN.Data.Repositories
         Task<int> CreateImageAsync(CreateImageDto createImageDto);
         Task<GetImageDto> GetImageAsync(int imageId);
         Task DeleteImageAsync(int imageId);
+        Task<int> CreatePostAsync(CreatePostDto createPostDto);
     }
 }

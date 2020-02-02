@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PhotoSN.Data.Migrations
 {
@@ -44,6 +44,7 @@ namespace PhotoSN.Data.Migrations
                     AccessFailedCount = table.Column<int>(nullable: false),
                     Nickname = table.Column<string>(maxLength: 20, nullable: false),
                     BirthDate = table.Column<DateTime>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
                     Bio = table.Column<string>(maxLength: 300, nullable: true),
                     IsPrivate = table.Column<bool>(nullable: false)
                 },
@@ -221,7 +222,8 @@ namespace PhotoSN.Data.Migrations
                     PostId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(nullable: false),
-                    Description = table.Column<string>(maxLength: 300, nullable: true)
+                    Description = table.Column<string>(maxLength: 300, nullable: true),
+                    Created = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -262,7 +264,8 @@ namespace PhotoSN.Data.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false),
-                    ImageId = table.Column<int>(nullable: false)
+                    ImageId = table.Column<int>(nullable: false),
+                    IsCurrent = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -289,7 +292,8 @@ namespace PhotoSN.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PostId = table.Column<int>(nullable: false),
                     UserId = table.Column<int>(nullable: false),
-                    Text = table.Column<string>(maxLength: 300, nullable: false)
+                    Text = table.Column<string>(maxLength: 300, nullable: false),
+                    Created = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -332,29 +336,6 @@ namespace PhotoSN.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InPostMentions",
-                columns: table => new
-                {
-                    PostId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InPostMentions", x => new { x.UserId, x.PostId });
-                    table.ForeignKey(
-                        name: "FK_InPostMentions_Posts_PostId",
-                        column: x => x.PostId,
-                        principalTable: "Posts",
-                        principalColumn: "PostId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InPostMentions_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostImages",
                 columns: table => new
                 {
@@ -384,7 +365,8 @@ namespace PhotoSN.Data.Migrations
                 columns: table => new
                 {
                     PostId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -407,7 +389,8 @@ namespace PhotoSN.Data.Migrations
                 columns: table => new
                 {
                     CommentId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<int>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -420,29 +403,6 @@ namespace PhotoSN.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CommentLikes_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "InCommentMentions",
-                columns: table => new
-                {
-                    CommentId = table.Column<int>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_InCommentMentions", x => new { x.UserId, x.CommentId });
-                    table.ForeignKey(
-                        name: "FK_InCommentMentions_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
-                        principalColumn: "CommentId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_InCommentMentions_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -523,18 +483,8 @@ namespace PhotoSN.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InCommentMentions_CommentId",
-                table: "InCommentMentions",
-                column: "CommentId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_InPostHashtags_PostId",
                 table: "InPostHashtags",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InPostMentions_PostId",
-                table: "InPostMentions",
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
@@ -585,13 +535,7 @@ namespace PhotoSN.Data.Migrations
                 name: "CommentLikes");
 
             migrationBuilder.DropTable(
-                name: "InCommentMentions");
-
-            migrationBuilder.DropTable(
                 name: "InPostHashtags");
-
-            migrationBuilder.DropTable(
-                name: "InPostMentions");
 
             migrationBuilder.DropTable(
                 name: "PostImages");

@@ -24,21 +24,23 @@ namespace PhotoSN.WebMvcIdentity.Services
             return Path.Combine(Directory.GetCurrentDirectory(), _imageHelperOptions.ImageStoragePath, guid.ToString());
         }
 
-        public async Task SaveImageAsync(IFormFile image, Guid guid)
+        public async Task SaveImageAsync(IFormFile imageFile, Guid guid)
         {
             var fileName = GetFullFileName(guid);
-            var fileStream = new FileStream(fileName, FileMode.Create);
-            await image.CopyToAsync(fileStream);
-            fileStream.Close();
+            using (var fileStream = new FileStream(fileName, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
         }
 
-        public async Task SaveAvatarAsync(IFormFile image, Guid guid)
+        public async Task SaveAvatarAsync(IFormFile imageFile, Guid guid)
         {
             var tempFileName = GetFullFileName(guid) + "Temp";
             var constFileName = GetFullFileName(guid);
-            var fileStream = new FileStream(tempFileName, FileMode.Create);
-            await image.CopyToAsync(fileStream);
-            fileStream.Close();
+            using (var tempFileStream = new FileStream(tempFileName, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(tempFileStream);
+            }
 
             using (var tempFileStream = File.OpenRead(tempFileName))
             {

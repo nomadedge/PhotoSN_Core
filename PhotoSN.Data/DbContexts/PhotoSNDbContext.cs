@@ -11,11 +11,9 @@ namespace PhotoSN.Data.DbContexts
         public DbSet<Subscription> Subscriptions { get; set; }
 
         public DbSet<Post> Posts { get; set; }
-        public DbSet<InPostMention> InPostMentions { get; set; }
         public DbSet<PostLike> PostLikes { get; set; }
 
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<InCommentMention> InCommentMentions { get; set; }
         public DbSet<CommentLike> CommentLikes { get; set; }
 
         public DbSet<Hashtag> Hashtags { get; set; }
@@ -77,33 +75,11 @@ namespace PhotoSN.Data.DbContexts
                 .WithMany(u => u.Images)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<InCommentMention>().HasKey(icm => new
-            {
-                icm.UserId,
-                icm.CommentId
-            });
-            builder.Entity<InCommentMention>()
-                .HasOne(icm => icm.User)
-                .WithMany(u => u.InCommentMentions)
-                .HasForeignKey(icm => icm.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             builder.Entity<InPostHashtag>().HasKey(iph => new
             {
                 iph.HashtagId,
                 iph.PostId
             });
-
-            builder.Entity<InPostMention>().HasKey(br => new
-            {
-                br.UserId,
-                br.PostId
-            });
-            builder.Entity<InPostMention>()
-                .HasOne(ipm => ipm.User)
-                .WithMany(u => u.InPostMentions)
-                .HasForeignKey(ipm => ipm.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<PostLike>().HasKey(pl => new
             {

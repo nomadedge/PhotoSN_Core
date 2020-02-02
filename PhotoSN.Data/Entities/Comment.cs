@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace PhotoSN.Data.Entities
@@ -7,7 +8,6 @@ namespace PhotoSN.Data.Entities
     {
         public Comment()
         {
-            InCommentMentions = new HashSet<InCommentMention>();
             CommentLikes = new HashSet<CommentLike>();
         }
 
@@ -19,7 +19,7 @@ namespace PhotoSN.Data.Entities
         [Required]
         [StringLength(300)]
         public string Text { get; set; }
-        public virtual ICollection<InCommentMention> InCommentMentions { get; set; }
+        public DateTime Created { get; set; }
         public virtual ICollection<CommentLike> CommentLikes { get; set; }
     }
 }

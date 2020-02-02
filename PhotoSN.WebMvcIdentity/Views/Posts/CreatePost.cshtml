@@ -1,0 +1,13 @@
+﻿@model PostModel
+@{
+    ViewData["Title"] = "New post";
+    var imageTemplate = await Html.PartialAsync("_ImageTemplate");
+}
+
+
+
+@section Scripts {
+    <script type="text/template" id="imageTemplate">
+        @imageTemplate
+    </script>
+}

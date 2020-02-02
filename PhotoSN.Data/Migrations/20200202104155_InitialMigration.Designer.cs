@@ -10,7 +10,7 @@ using PhotoSN.Data.DbContexts;
 namespace PhotoSN.Data.Migrations
 {
     [DbContext(typeof(PhotoSNDbContext))]
-    [Migration("20200120110127_InitialMigration")]
+    [Migration("20200202104155_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,6 +163,9 @@ namespace PhotoSN.Data.Migrations
                     b.Property<int>("ImageId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
                     b.HasKey("UserId", "ImageId");
 
                     b.HasIndex("ImageId");
@@ -192,6 +195,9 @@ namespace PhotoSN.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -219,6 +225,9 @@ namespace PhotoSN.Data.Migrations
 
                     b.Property<int>("CommentId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("UserId", "CommentId");
 
@@ -274,21 +283,6 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.Entities.InCommentMention", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.ToTable("InCommentMentions");
-                });
-
             modelBuilder.Entity("PhotoSN.Data.Entities.InPostHashtag", b =>
                 {
                     b.Property<int>("HashtagId")
@@ -304,27 +298,15 @@ namespace PhotoSN.Data.Migrations
                     b.ToTable("InPostHashtags");
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.Entities.InPostMention", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "PostId");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("InPostMentions");
-                });
-
             modelBuilder.Entity("PhotoSN.Data.Entities.Post", b =>
                 {
                     b.Property<int>("PostId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(300)")
@@ -365,6 +347,9 @@ namespace PhotoSN.Data.Migrations
 
                     b.Property<int>("PostId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("UserId", "PostId");
 
@@ -411,6 +396,9 @@ namespace PhotoSN.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(256)")
@@ -593,21 +581,6 @@ namespace PhotoSN.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PhotoSN.Data.Entities.InCommentMention", b =>
-                {
-                    b.HasOne("PhotoSN.Data.Entities.Comment", "Comment")
-                        .WithMany("InCommentMentions")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PhotoSN.Data.Entities.User", "User")
-                        .WithMany("InCommentMentions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("PhotoSN.Data.Entities.InPostHashtag", b =>
                 {
                     b.HasOne("PhotoSN.Data.Entities.Hashtag", "Hashtag")
@@ -620,21 +593,6 @@ namespace PhotoSN.Data.Migrations
                         .WithMany("InPostHashtags")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("PhotoSN.Data.Entities.InPostMention", b =>
-                {
-                    b.HasOne("PhotoSN.Data.Entities.Post", "Post")
-                        .WithMany("InPostMentions")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PhotoSN.Data.Entities.User", "User")
-                        .WithMany("InPostMentions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

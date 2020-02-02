@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using PhotoSN.Data.Entities;
 using PhotoSN.Data.Dtos;
+using PhotoSN.Data.Entities;
 using PhotoSN.WebMvcIdentity.IdentityViewModels;
+using PhotoSN.WebMvcIdentity.Models;
 
 namespace PhotoSN.WebMvcIdentity.AutoMapper
 {
@@ -25,6 +26,8 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
             CreateMap<Avatar, AvatarsHistoryDto>();
 
             CreateMap<AvatarsHistoryDto, ManageAvatarsHistoryViewModel>();
+
+            CreateMap<PostModel, CreatePostDto>();
         }
     }
 }
