@@ -44,7 +44,7 @@ namespace PhotoSN.WebMvcIdentity.Controllers
         {
             try
             {
-                if (postModel != null &&
+                if (postModel == null ||
                     postModel.ImageIds == null ||
                     !postModel.ImageIds.Any() ||
                     postModel.ImageIds.Count > 10)
