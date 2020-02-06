@@ -19,7 +19,7 @@ namespace PhotoSN.Data.Services
             var symbolsArray = symbolsList.ToArray();
 
             var words = description.Split(symbolsArray).ToList();
-            var regex = new Regex("^[a-zA-Z0-9_]*");
+            var regex = new Regex("^#[a-zA-Z0-9_]*$");
             var hashtags = new List<string>();
 
             foreach (var word in words)
@@ -27,10 +27,10 @@ namespace PhotoSN.Data.Services
                 var match = regex.Match(word);
                 if (match.Success)
                 {
-                    var hashtag = match.Groups[1].ToString().ToLower();
-                    if (string.IsNullOrEmpty(hashtag))
+                    var hashtag = match.Groups[0].ToString().ToLower();
+                    if (!string.IsNullOrEmpty(hashtag) && !hashtags.Contains(hashtag))
                     {
-                        hashtags.Add(hashtag);
+                        hashtags.Add(hashtag.Substring(1));
                     }
                 }
             }

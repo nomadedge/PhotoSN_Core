@@ -1,13 +1,101 @@
 ﻿@model PostModel
 @{
     ViewData["Title"] = "New post";
-    var imageTemplate = await Html.PartialAsync("_ImageTemplate");
+    var imageTemplate = await Html.PartialAsync("_ImageTemplate.cshtml");
 }
 
-
+@section Styles {
+    <style>
+        .CreatePostImage {
+            max-height: 200px;
+            max-width: 200px;
+            border-radius: 10px;
+        }
+    </style>
+}
 
 @section Scripts {
+    <script src="~/lib/hogan.js/hogan.js"></script>
     <script type="text/template" id="imageTemplate">
         @imageTemplate
     </script>
+
+    <script>
+        var imageTemplate = Hogan.compile($("#imageTemplate").html());
+        var imageIds = @Json.Serialize(Model.ImageIds);
+
+        function UploadPictures(elem) {
+            if (elem.files.length < 1) {
+                return;
+            }
+            else if (elem.files.length + imageIds.length > 10) {
+                alert("Post can contain no more than 10 pictures. You've already added " + imageIds.length + " of them.");
+                return;
+            }
+
+            var formData = new FormData();
+            for (var i = 0; i != elem.files.length; i++) {
+                formData.append("imageFiles", elem.files[i]);
+            }
+
+            $("#PicturesInput").attr("disabled", "disabled");
+            $("#SavePostButton").attr("disabled", "disabled");
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateImages", "Images")",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    if (Array.isArray(result)) {
+                        result.forEach(function (i) {
+                            imageIds.push(i);
+                        });
+
+                        $("#PicturesPreview").html(imageTemplate.render({"Images": imageIds}));
+                    }
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    $("#SavePostButton").removeAttr("disabled");
+                    if (imageIds.length < 10) {
+                        $("#PicturesInput").removeAttr("disabled");
+                    }
+                }
+            });
+        }
+
+        function CreatePost() {
+            $("#SavePostButton").attr("disabled");
+            var post = {
+                "Description": $("#Description").val(),
+                "ImageIds": imageIds
+            };
+            $.post("@Url.Action("CreatePost")", post)
+                .done(function (result) {
+                    window.location.replace("@Url.Action("GetPost", "Posts")/" + result);
+                })
+                .fail(function (xhr) {
+                    alert(xhr.responseText);
+                    $("#SavePostButton").removeAttr("disabled");
+                });
+        }
+    </script>
 }
+
+<div>
+    <p>You will see pictures' previews as they will be uploaded. To remove picture just click on it.</p>
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description" id="Description" class="form-control" rows="5" style="resize: none;"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageIds"></label>
+        <input type="file" accept="image/*" multiple id="PicturesInput" onchange="UploadPictures(this)" />
+        <div id="PicturesPreview"></div>
+    </div>
+    <button class="btn btn-primary" id="SavePostButton" onclick="CreatePost()">Save post</button>
+</div>

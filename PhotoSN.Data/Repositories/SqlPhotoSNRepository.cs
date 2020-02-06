@@ -235,9 +235,10 @@ namespace PhotoSN.Data.Repositories
 
         public async Task<int> CreatePostAsync(CreatePostDto createPostDto)
         {
-            if (createPostDto.ImageIds != null &&
-                createPostDto.ImageIds.Any() &&
-                createPostDto.ImageIds.Count < 10)
+            if (createPostDto == null ||
+                createPostDto.ImageIds == null ||
+                !createPostDto.ImageIds.Any() ||
+                createPostDto.ImageIds.Count > 10)
             {
                 throw new ArgumentOutOfRangeException("Post must contain from 1 to 10 pictures.");
             }
@@ -313,6 +314,34 @@ namespace PhotoSN.Data.Repositories
                     transaction.Rollback();
                     throw e;
                 }
+            }
+        }
+
+        public async Task<GetPostDto> GetPostAsync(int postId)
+        {
+            try
+            {
+                var post = await _photoSNDbContext.Posts
+                    .Include(p => p.User)
+                    .Include(p => p.PostImages)
+                    .FirstOrDefaultAsync(p => p.PostId == postId);
+                if (post == null)
+                {
+                    throw new ArgumentException("Post not found.");
+                }
+
+                var getPostDto = _mapper.Map<GetPostDto>(post);
+                getPostDto.ImageIds = new List<int>();
+                foreach (var postImage in post.PostImages.OrderBy(pi => pi.OrderNumber))
+                {
+                    getPostDto.ImageIds.Add(postImage.ImageId);
+                }
+
+                return getPostDto;
+            }
+            catch (Exception e)
+            {
+                throw e;
             }
         }
     }

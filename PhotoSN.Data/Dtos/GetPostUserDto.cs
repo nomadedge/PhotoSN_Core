@@ -1,6 +1,6 @@
 ﻿namespace PhotoSN.Data.Dtos
 {
-    public class UserDto
+    public class GetPostUserDto
     {
         public int UserId { get; set; }
         public string Nickname { get; set; }

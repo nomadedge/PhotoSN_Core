@@ -8,6 +8,7 @@ using PhotoSN.Data.Repositories;
 using PhotoSN.WebMvcIdentity.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PhotoSN.WebMvcIdentity.Controllers
@@ -45,43 +46,17 @@ namespace PhotoSN.WebMvcIdentity.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateImage(IFormFile imageFile)
-        {
-            try
-            {
-                if (imageFile.ContentType.Contains("image"))
-                {
-                    throw new ArgumentException("File type should be image");
-                }
-                var newGuid = Guid.NewGuid();
-                var userId = (await _userManager.GetUserAsync(User)).Id;
-                var createImageDto = new CreateImageDto
-                {
-                    UserId = userId,
-                    MimeType = imageFile.ContentType,
-                    Guid = newGuid
-                };
-
-                var imageId = await _photoSNRepository.CreateImageAsync(createImageDto);
-                await _imageHelper.SaveImageAsync(imageFile, newGuid);
-
-                return StatusCode(StatusCodes.Status201Created, imageId);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
-        [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateImages(IFormFileCollection imageFiles)
         {
             try
             {
+                if (!imageFiles.Any())
+                {
+                    throw new ArgumentOutOfRangeException("Upload at least 1 image.");
+                }
                 foreach (var imageFile in imageFiles)
                 {
-                    if (imageFile.ContentType.Contains("image"))
+                    if (!imageFile.ContentType.Contains("image"))
                     {
                         throw new ArgumentException("File type should be image");
                     }

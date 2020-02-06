@@ -30,11 +30,12 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult CreatePost()
         {
             var model = new PostModel { ImageIds = new List<int>() };
-            return PartialView(model);
+            return View(model);
         }
 
         [HttpPost]
@@ -43,9 +44,10 @@ namespace PhotoSN.WebMvcIdentity.Controllers
         {
             try
             {
-                if (postModel.ImageIds != null &&
-                postModel.ImageIds.Any() &&
-                postModel.ImageIds.Count < 10)
+                if (postModel != null &&
+                    postModel.ImageIds == null ||
+                    !postModel.ImageIds.Any() ||
+                    postModel.ImageIds.Count > 10)
                 {
                     throw new ArgumentOutOfRangeException("Post must contain from 1 to 10 pictures.");
                 }
@@ -61,7 +63,20 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPost(int id)
+        {
+            try
+            {
+                var getPostDto = await _photoSNRepository.GetPostAsync(id);
+                return View(getPostDto);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PhotoSN.Data.AutoMapper;
 using PhotoSN.Data.DbContexts;
 using PhotoSN.Data.Entities;
 using PhotoSN.Data.Repositories;
@@ -32,7 +33,7 @@ namespace PhotoSN.WebMvcIdentity
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(Startup), typeof(EntityDtoProfile));
 
             services.AddTransient<IEmailSender, SendGridEmailSender>();
             services.Configure<AuthMessageSenderOptions>(Configuration);
