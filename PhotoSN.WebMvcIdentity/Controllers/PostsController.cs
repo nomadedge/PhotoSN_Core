@@ -38,8 +38,8 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             return View(model);
         }
 
-        [HttpPost]
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> CreatePost(PostModel postModel)
         {
             try
@@ -72,6 +72,34 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             {
                 var getPostDto = await _photoSNRepository.GetPostAsync(id);
                 return View(getPostDto);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFullPost(int id)
+        {
+            try
+            {
+                var getFullPostDto = await _photoSNRepository.GetFullPostAsync(id);
+                return View(getFullPostDto);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPostsByUserId(int userId, int? postId = int.MaxValue)
+        {
+            try
+            {
+                var postIds = await _photoSNRepository.GetPostsByUserIdAsync(userId, postId);
+                return Json(postIds);
             }
             catch (Exception e)
             {

@@ -16,5 +16,13 @@ namespace PhotoSN.Data.Repositories
         Task DeleteImageAsync(int imageId);
         Task<int> CreatePostAsync(CreatePostDto createPostDto);
         Task<GetPostDto> GetPostAsync(int postId);
+        Task<GetFullPostDto> GetFullPostAsync(int postId);
+        Task<List<int>> GetPostsByUserIdAsync(int userId, int? postId);
+        Task<List<int>> GetFeedByUserIdAsync(int userId, int? postId);
+        Task<GetUserDto> GetUserAsync(int userId);
+        Task FollowToUserAsync(int followerUserId, int followingUserId);
+        Task UnfollowFromUserAsync(int followerUserId, int followingUserId);
+        Task<List<GetSimpleUserDto>> GetFollowersAsync(int userId);
+        Task<List<GetSimpleUserDto>> GetFollowingsAsync(int userId);
     }
 }

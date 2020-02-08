@@ -1,0 +1,71 @@
+﻿@model PhotoSN.Data.Dtos.GetFullPostDto
+
+@{
+    ViewData["Title"] = "Post from" + Model.User.Nickname;
+}
+
+@section Styles {
+    <style>
+        .GetFullPostImage {
+            max-width: 100%;
+            max-height: 100vh;
+            margin: 2px;
+        }
+
+        .FullPostAvatarImage {
+            height: 50px;
+            width: 50px;
+            border-radius: 50px;
+            margin: 5px;
+        }
+    </style>
+}
+
+<div class="row">
+    <div class="col-sm-12 row">
+        <img class="FullPostAvatarImage"
+             src="@Url.Action("GetImage", "Images", new { id=Model.User.AvatarImageId })"
+             onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+        <div>
+            <div>@Html.DisplayFor(model => model.User.Nickname)</div>
+            <div>@Html.DisplayFor(model => model.Created)</div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        @Html.DisplayFor(model => model.Description)
+    </div>
+    <div class="col-sm-12">
+        <ul style="list-style:none; padding:0;">
+            @foreach (var imageId in Model.ImageIds)
+            {
+                <li>
+                    <img class="GetFullPostImage" src="@Url.Action("GetImage", "Images")/@imageId" />
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-sm-12 row">
+        @Html.DisplayFor(model => model.Likes.Count)
+    </div>
+    <div class="col-sm-12">
+        <ul style="list-style:none; padding:0;">
+            @foreach (var comment in Model.Comments)
+            {
+                <li class="row">
+                    <div class="col-sm-12">
+                        <img class="FullPostAvatarImage"
+                             src="@Url.Action("GetImage", "Images", new { id=comment.User.AvatarImageId })"
+                             onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+                        <div>
+                            <p>@comment.User.Nickname</p>
+                            <p>@comment.Created</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <p>@comment.Text</p>
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

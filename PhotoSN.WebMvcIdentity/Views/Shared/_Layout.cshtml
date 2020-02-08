@@ -22,9 +22,16 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="CreatePost">Create a post</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="GetUser"
+                                   asp-route-id="@((await UserManager.GetUserAsync(User)).Id)">My Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="CreatePost">Create a post</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -43,8 +50,16 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/hogan.js/hogan.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
     @RenderSection("Styles", required: false)
+    <style>
+        .UserBarAvatarImage{
+            width: 50px;
+            height: 50px;
+            border-radius: 50px;
+        }
+    </style>
 </body>
 </html>

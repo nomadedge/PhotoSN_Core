@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace PhotoSN.Data.Entities
 {
@@ -40,5 +41,18 @@ namespace PhotoSN.Data.Entities
         public virtual ICollection<Subscription> Followers { get; set; }
         public virtual ICollection<Image> Images { get; set; }
         public virtual ICollection<Avatar> Avatars { get; set; }
+
+        public int? GetCurrentAvatarImageId()
+        {
+            var currentAvatar = Avatars.FirstOrDefault(a => a.IsCurrent == true);
+            if (currentAvatar == null)
+            {
+                return null;
+            }
+            else
+            {
+                return currentAvatar.ImageId;
+            }
+        }
     }
 }

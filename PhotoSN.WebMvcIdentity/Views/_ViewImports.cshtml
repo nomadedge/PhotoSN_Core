@@ -1,4 +1,13 @@
 ﻿@using PhotoSN.WebMvcIdentity
 @using PhotoSN.WebMvcIdentity.ViewModels
 @using PhotoSN.WebMvcIdentity.Models
+@using PhotoSN.Data.Entities
+@using PhotoSN.Data.Dtos
+@using Microsoft.AspNetCore.Identity
+@using PhotoSN.Data.Repositories
+@using AutoMapper
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@inject IPhotoSNRepository PhotoSNRepository
+@inject IMapper Mapper
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

@@ -18,6 +18,8 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
             CreateMap<AvatarsHistoryDto, ManageAvatarsHistoryViewModel>();
 
             CreateMap<PostModel, CreatePostDto>();
+
+            CreateMap<GetUserDto, UserModel>();
         }
     }
 }

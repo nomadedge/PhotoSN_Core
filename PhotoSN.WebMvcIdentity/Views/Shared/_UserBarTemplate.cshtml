@@ -1,0 +1,12 @@
+﻿{{#UserBars}}
+    <div class="UserBar row" data-userid="{{userId}}">
+        <a class="row" style="margin-left: 30px;" href="/Users/GetUser/{{userId}}">
+            <img class="UserBarAvatarImage"
+                 src="@Url.Action("GetImage", "Images")/{{avatarImageId}}"
+                 onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+            <div style="font-size: 20px; text-align: center;">
+                {{nickname}}
+            </div>
+        </a>
+    </div>
+{{/UserBars}}

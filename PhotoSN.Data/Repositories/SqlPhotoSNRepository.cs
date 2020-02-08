@@ -323,7 +323,10 @@ namespace PhotoSN.Data.Repositories
             {
                 var post = await _photoSNDbContext.Posts
                     .Include(p => p.User)
+                        .ThenInclude(u => u.Avatars)
                     .Include(p => p.PostImages)
+                    .Include(p => p.PostLikes)
+                    .Include(p => p.Comments)
                     .FirstOrDefaultAsync(p => p.PostId == postId);
                 if (post == null)
                 {
@@ -331,13 +334,251 @@ namespace PhotoSN.Data.Repositories
                 }
 
                 var getPostDto = _mapper.Map<GetPostDto>(post);
-                getPostDto.ImageIds = new List<int>();
-                foreach (var postImage in post.PostImages.OrderBy(pi => pi.OrderNumber))
-                {
-                    getPostDto.ImageIds.Add(postImage.ImageId);
-                }
 
                 return getPostDto;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<GetFullPostDto> GetFullPostAsync(int postId)
+        {
+            try
+            {
+                var post = await _photoSNDbContext.Posts
+                    .Include(p => p.User)
+                        .ThenInclude(u => u.Avatars)
+                    .Include(p => p.PostImages)
+                    .Include(p => p.PostLikes)
+                        .ThenInclude(pl => pl.User)
+                    .Include(p => p.Comments)
+                        .ThenInclude(c => c.User)
+                    .FirstOrDefaultAsync(p => p.PostId == postId);
+                if (post == null)
+                {
+                    throw new ArgumentException("Post not found.");
+                }
+
+                var getFullPostDto = _mapper.Map<GetFullPostDto>(post);
+
+                return getFullPostDto;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<List<int>> GetPostsByUserIdAsync(int userId, int? postId = int.MaxValue)
+        {
+            try
+            {
+                var user = await _photoSNDbContext.Users
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    throw new ArgumentException($"User with id {userId} does not exist.");
+                }
+
+                var postIds = await _photoSNDbContext.Posts
+                    .Include(p => p.User)
+                    .Where(p => p.User == user && p.PostId < postId)
+                    .Reverse()
+                    .Take(10)
+                    .Select(p => p.PostId)
+                    .ToListAsync();
+
+                return postIds;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<List<int>> GetFeedByUserIdAsync(int userId, int? postId)
+        {
+            try
+            {
+                var user = await _photoSNDbContext.Users
+                    .Include(u => u.Following)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    throw new ArgumentException($"User with id {userId} does not exist.");
+                }
+
+                var feedIds = user.Following.Select(s => s.SecondUserId).ToList();
+
+                var postIds = await _photoSNDbContext.Posts
+                    .Include(p => p.User)
+                    .Where(p => feedIds.Contains(p.User.Id) && p.PostId < postId)
+                    .Reverse()
+                    .Take(10)
+                    .Select(p => p.PostId)
+                    .ToListAsync();
+
+                return postIds;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<GetUserDto> GetUserAsync(int userId)
+        {
+            try
+            {
+                var user = await _photoSNDbContext.Users
+                    .Include(u => u.Avatars)
+                    .Include(u => u.Followers)
+                        .ThenInclude(s => s.FirstUser)
+                            .ThenInclude(u => u.Avatars)
+                    .Include(u => u.Following)
+                        .ThenInclude(s => s.SecondUser)
+                            .ThenInclude(u => u.Avatars)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    throw new ArgumentException($"User with id { userId } does not exist.");
+                }
+
+                var getUserDto = _mapper.Map<GetUserDto>(user);
+                getUserDto.Followers = _mapper.Map<List<GetSimpleUserDto>>(user.Followers.Select(s => s.FirstUser));
+                getUserDto.Following = _mapper.Map<List<GetSimpleUserDto>>(user.Following.Select(s => s.SecondUser));
+
+                return getUserDto;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task FollowToUserAsync(int followerUserId, int followingUserId)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var followerUser = await _photoSNDbContext.Users.FindAsync(followerUserId);
+                    if (followerUser == null)
+                    {
+                        throw new ArgumentException($"User with id {followerUserId} does not exist.");
+                    }
+                    var followingUser = await _photoSNDbContext.Users.FindAsync(followingUserId);
+                    if (followingUser == null)
+                    {
+                        throw new ArgumentException($"User with id {followingUserId} does not exist.");
+                    }
+
+                    var existingSubscription = await _photoSNDbContext.Subscriptions
+                        .FirstOrDefaultAsync(s => s.FirstUserId == followerUserId && s.SecondUserId == followingUserId);
+                    if (existingSubscription != null)
+                    {
+                        throw new InvalidOperationException($"User with id {followerUserId} is already following user with id {followingUserId}.");
+                    }
+
+                    var newSubscription = new Subscription
+                    {
+                        FirstUser = followerUser,
+                        SecondUser = followingUser,
+                        IsApproved = true
+                    };
+                    _photoSNDbContext.Subscriptions.Add(newSubscription);
+
+                    await _photoSNDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
+        public async Task UnfollowFromUserAsync(int followerUserId, int followingUserId)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var followerUser = await _photoSNDbContext.Users.FindAsync(followerUserId);
+                    if (followerUser == null)
+                    {
+                        throw new ArgumentException($"User with id {followerUserId} does not exist.");
+                    }
+                    var followingUser = await _photoSNDbContext.Users.FindAsync(followingUserId);
+                    if (followingUser == null)
+                    {
+                        throw new ArgumentException($"User with id {followingUserId} does not exist.");
+                    }
+
+                    var existingSubscription = await _photoSNDbContext.Subscriptions
+                        .FirstOrDefaultAsync(s => s.FirstUserId == followerUserId && s.SecondUserId == followingUserId);
+                    if (existingSubscription == null)
+                    {
+                        throw new InvalidOperationException($"User with id {followerUserId} is not following user with id {followingUserId}.");
+                    }
+
+                    _photoSNDbContext.Subscriptions.Remove(existingSubscription);
+
+                    await _photoSNDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
+        public async Task<List<GetSimpleUserDto>> GetFollowersAsync(int userId)
+        {
+            try
+            {
+                var user = await _photoSNDbContext.Users
+                    .Include(u => u.Followers)
+                        .ThenInclude(s => s.FirstUser)
+                            .ThenInclude(u => u.Avatars)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    throw new ArgumentException($"User with id { userId } does not exist.");
+                }
+
+                var followers = _mapper.Map<List<GetSimpleUserDto>>(user.Followers.Select(s => s.FirstUser));
+
+                return followers;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<List<GetSimpleUserDto>> GetFollowingsAsync(int userId)
+        {
+            try
+            {
+                var user = await _photoSNDbContext.Users
+                    .Include(u => u.Following)
+                        .ThenInclude(s => s.SecondUser)
+                            .ThenInclude(u => u.Avatars)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+                if (user == null)
+                {
+                    throw new ArgumentException($"User with id { userId } does not exist.");
+                }
+
+                var following = _mapper.Map<List<GetSimpleUserDto>>(user.Following.Select(s => s.SecondUser));
+
+                return following;
             }
             catch (Exception e)
             {

@@ -1,0 +1,169 @@
+﻿@model UserModel
+@{
+    ViewData["Title"] = Model.Nickname;
+    var currentUser = await UserManager.GetUserAsync(User);
+    var userBarTemplate = await Html.PartialAsync("_UserBarTemplate");
+}
+
+@section Styles{
+    <style>
+        .AvatarImage {
+            height: 300px;
+            width: 300px;
+            border-radius: 300px;
+        }
+
+        .MainNickname {
+            font-size: 30px;
+        }
+    </style>
+}
+
+@section Scripts{ 
+    <script type="text/template" id="userBarTemplate">
+        @userBarTemplate
+    </script>
+
+    <script>
+        var userBarTemplate = Hogan.compile($("#userBarTemplate").html());
+
+        function FollowToUser() {
+            $("#FollowerButton").attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("FollowToUser")/@Model.UserId",
+                type: "POST",
+                success: function () {
+                    $("#FollowerButton").attr("class", "btn btn-danger");
+                    $("#FollowerButton").text("Unfollow");
+                    $("#FollowerButton").attr("onclick", "UnfollowFromUser()");
+                    $("#FollowersAmount").text(parseInt($("#FollowersAmount").text()) + 1);
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    $("#FollowerButton").removeAttr("disabled");
+                }
+            });
+        }
+
+        function UnfollowFromUser() {
+            $("#FollowerButton").attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("UnfollowFromUser")/@Model.UserId",
+                type: "DELETE",
+                success: function () {
+                    $("#FollowerButton").attr("class", "btn btn-primary");
+                    $("#FollowerButton").text("Follow");
+                    $("#FollowerButton").attr("onclick", "FollowToUser()");
+                    $("#FollowersAmount").text(parseInt($("#FollowersAmount").text()) - 1);
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    $("#FollowerButton").removeAttr("disabled");
+                }
+            });
+        }
+
+        function ShowFollowers() {
+            $("#ShowFollowersButton").attr("disabled", "disabled");
+            $("#ShowFollowingsButton").attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("GetFollowers")/@Model.UserId",
+                type: "GET",
+                success: function (result) {
+                    $(".modal-title").html("@Model.Nickname's followers");
+                    $(".modal-body").html(userBarTemplate.render({ "UserBars": result }));
+                    $("#UserBarsModal").modal("show");
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    $("#ShowFollowersButton").removeAttr("disabled");
+                    $("#ShowFollowingsButton").removeAttr("disabled");
+                }
+            });
+        }
+
+        function ShowFollowings() {
+            $("#ShowFollowersButton").attr("disabled", "disabled");
+            $("#ShowFollowingsButton").attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("GetFollowings")/@Model.UserId",
+                type: "GET",
+                success: function (result) {
+                    $(".modal-title").html("@Model.Nickname's followings");
+                    $(".modal-body").html(userBarTemplate.render({"UserBars": result}));
+                    $("#UserBarsModal").modal("show");
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    $("#ShowFollowersButton").removeAttr("disabled");
+                    $("#ShowFollowingsButton").removeAttr("disabled");
+                }
+            });
+        }
+    </script>
+}
+
+<div>
+    <div class="col-md-12 row">
+        <img class="AvatarImage"
+             src="@Url.Action("GetImage", "Images", new { id=Model.AvatarImageId })"
+             onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+        <div style="margin-left: 10px;">
+            <div>
+                <div class="MainNickname">@Html.DisplayFor(model => model.Nickname)</div>
+                <div>@Html.DisplayFor(model => model.Bio)</div>
+                <div style="margin-right: 30px;">
+                    <button style="all: unset; cursor: pointer;" id="ShowFollowersButton" onclick="ShowFollowers()">
+                        @Html.DisplayNameFor(model => model.Followers) <span id="FollowersAmount" style="font-weight: bold;">@Html.DisplayFor(model => model.Followers.Count)</span>
+                    </button>
+                </div>
+                <div>
+                    <button style="all: unset; cursor: pointer;" id="ShowFollowingsButton" onclick="ShowFollowings()">
+                        @Html.DisplayNameFor(model => model.Following) <span style="font-weight: bold;">@Html.DisplayFor(model => model.Following.Count)</span>
+                    </button>
+                </div>
+                @if (User.Identity.IsAuthenticated && currentUser.Email != Model.Email)
+                {
+                    if (Model.Followers.FirstOrDefault(s => s.UserId == currentUser.Id) != null)
+                    {
+                        <button id="FollowerButton" class="btn btn-danger" onclick="UnfollowFromUser()">Unfollow</button>
+                    }
+                    else
+                    {
+                        <button id="FollowerButton" class="btn btn-primary" onclick="FollowToUser()">Follow</button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="UserBarsModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

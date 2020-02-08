@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using PhotoSN.Data.Dtos;
 using PhotoSN.Data.Entities;
+using System.Linq;
 
 namespace PhotoSN.Data.AutoMapper
 {
@@ -18,19 +19,35 @@ namespace PhotoSN.Data.AutoMapper
 
             CreateMap<Avatar, AvatarsHistoryDto>();
 
-            CreateMap<User, GetPostUserDto>()
-                .ForMember(gpud => gpud.UserId, opt => opt.MapFrom(u => u.Id));
+            CreateMap<User, GetSimpleUserDto>()
+                .ForMember(gsud => gsud.UserId, opt => opt.MapFrom(u => u.Id))
+                .ForMember(gsud => gsud.AvatarImageId, opt => opt.MapFrom(
+                    u => u.GetCurrentAvatarImageId()));
+
+            CreateMap<Comment, GetCommentDto>()
+                .ForMember(gcd => gcd.Likes, opt => opt.MapFrom(c => c.CommentLikes.Select(cl => cl.User)));
 
             CreateMap<Post, GetPostDto>()
                 .ForMember(gpd => gpd.CommentsAmount, opt => opt.MapFrom(p => p.Comments.Count))
-                .ForMember(gpd => gpd.LikesAmount, opt => opt.MapFrom(p => p.PostLikes.Count));
-            //.ForMember(gpd => gpd.ImageIds, opt => opt.ConvertUsing(Post p =>
-            //{
-            //    var imageIds = new List<int>();
-            //    foreach (var postImage in p.PostImages)
-            //        imageIds.Add(postImage.ImageId);
-            //    return imageIds;
-            //}));
+                .ForMember(gpd => gpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.UserId)))
+                .ForMember(gpd => gpd.ImageIds, opt => opt.MapFrom(
+                    p => p.PostImages
+                    .OrderBy(p => p.OrderNumber)
+                    .Select(p => p.ImageId)));
+
+            CreateMap<Post, GetFullPostDto>()
+                .ForMember(gfpd => gfpd.ImageIds, opt => opt.MapFrom(
+                    p => p.PostImages
+                    .OrderBy(p => p.OrderNumber)
+                    .Select(p => p.ImageId)))
+                .ForMember(gfpd => gfpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.User)));
+
+            CreateMap<User, GetUserDto>()
+                .ForMember(gud => gud.UserId, opt => opt.MapFrom(u => u.Id))
+                .ForMember(gud => gud.AvatarImageId, opt => opt.MapFrom(
+                    u => u.GetCurrentAvatarImageId()))
+                .ForMember(gud => gud.Followers, opt => opt.Ignore())
+                .ForMember(gud => gud.Following, opt => opt.Ignore());
         }
     }
 }

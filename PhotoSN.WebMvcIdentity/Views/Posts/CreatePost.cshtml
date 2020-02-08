@@ -8,14 +8,13 @@
     <style>
         .CreatePostImage {
             max-height: 200px;
-            max-width: 200px;
+            max-width: 600px;
             border-radius: 10px;
         }
     </style>
 }
 
 @section Scripts {
-    <script src="~/lib/hogan.js/hogan.js"></script>
     <script type="text/template" id="imageTemplate">
         @imageTemplate
     </script>
@@ -75,12 +74,19 @@
             };
             $.post("@Url.Action("CreatePost")", post)
                 .done(function (result) {
-                    window.location.replace("@Url.Action("GetPost", "Posts")/" + result);
+                    window.location.replace("@Url.Action("GetUser", "Users")/" + @((await UserManager.GetUserAsync(User)).Id));
                 })
                 .fail(function (xhr) {
                     alert(xhr.responseText);
                     $("#SavePostButton").removeAttr("disabled");
                 });
+        }
+
+        function DeleteImage(elem) {
+            var imageIdToDelete = elem.getAttribute("data-imageid");
+            imageIds.splice(imageIds.indexOf(imageIdToDelete), 1);
+            var imageToDelete = $(".CreatePostImage[data-imageid='" + imageIdToDelete + "']");
+            imageToDelete.remove();
         }
     </script>
 }
