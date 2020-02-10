@@ -1,20 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PhotoSN.WebMvcIdentity.ViewModels;
 using System.Diagnostics;
 
 namespace PhotoSN.WebMvcIdentity.Controllers
 {
-    //[Route("[controller]")]
-    //[Controller]
     public class HomeController : Controller
     {
-        //[HttpGet("Index")]
+        [Authorize]
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        //[HttpGet("Error")]
+        [HttpGet]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

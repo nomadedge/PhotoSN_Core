@@ -3,6 +3,7 @@
     ViewData["Title"] = Model.Nickname;
     var currentUser = await UserManager.GetUserAsync(User);
     var userBarTemplate = await Html.PartialAsync("_UserBarTemplate");
+    var postTemplate = await Html.PartialAsync("_PostTemplate");
 }
 
 @section Styles{
@@ -16,16 +17,29 @@
         .MainNickname {
             font-size: 30px;
         }
+
+        .PostImage {
+            max-height: 200px;
+            max-width: 600px;
+            margin: 1px;
+            border-radius: 20px;
+        }
     </style>
 }
 
-@section Scripts{ 
+@section Scripts{
     <script type="text/template" id="userBarTemplate">
         @userBarTemplate
     </script>
 
+    <script type="text/template" id="postTemplate">
+        @postTemplate
+    </script>
+
     <script>
+        var hasMorePosts = true;
         var userBarTemplate = Hogan.compile($("#userBarTemplate").html());
+        var postTemplate = Hogan.compile($("#postTemplate").html());
 
         function FollowToUser() {
             $("#FollowerButton").attr("disabled", "disabled");
@@ -108,6 +122,71 @@
                 }
             });
         }
+
+        function GetMorePosts() {
+            var lastId = $(".Post").last().data("postid");
+            var urlString = "@Url.Action("GetPostsByUserId", "Posts")/@Model.UserId";
+            if (lastId != null) {
+                urlString += "?postId=" + lastId;
+            }
+            $.get(urlString)
+                .done(function (res) {
+                    if (Array.isArray(res)) {
+                        if (res.length == 0) {
+                            hasMorePosts = false
+                        }
+                        else {
+                            $("#Posts").append(postTemplate.render({ Posts: res }));
+                        }
+                    }
+            });
+        }
+
+        GetMorePosts();
+
+        $(window).on("scroll", function() {
+            var scrollTop = $(window).scrollTop();
+            var documentHeight = $(document).height();
+            var windowHeight = $(window).height();
+
+            if (documentHeight - scrollTop < windowHeight * 1.5 && hasMorePosts) {
+                GetMorePosts();
+	        }
+        });
+
+        function LikeOrDislikePost(elem) {
+            var postId = elem.getAttribute("data-postid");
+            var likeButton = $("button[data-postid=" + postId + "]");
+            var likeAmountSpan = $("#LikeAmount" + postId);
+
+            likeButton.attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("LikeOrDislikePost", "Posts")/" + postId,
+                type: "POST",
+                success: function (res) {
+                    if (res) {
+                        if (likeButton.text() == "Like") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) + 1);
+                        }
+                        likeButton.text("Dislike");
+                        likeButton.attr("class", "btn btn-danger");
+                    }
+                    else {
+                        if (likeButton.text() == "Dislike") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) - 1);
+                        }
+                        likeButton.text("Like");
+                        likeButton.attr("class", "btn btn-primary");
+                    }
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    likeButton.removeAttr("disabled");
+                }
+            });
+        };
     </script>
 }
 
@@ -144,8 +223,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-12">
-        
+    <div class="col-md-12" id="Posts">
+
     </div>
 </div>
 
@@ -159,7 +238,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

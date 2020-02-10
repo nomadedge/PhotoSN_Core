@@ -243,6 +243,11 @@ namespace PhotoSN.Data.Repositories
                 throw new ArgumentOutOfRangeException("Post must contain from 1 to 10 pictures.");
             }
 
+            if (createPostDto.Description == null)
+            {
+                createPostDto.Description = string.Empty;
+            }
+
             using (var transaction = _photoSNDbContext.Database.BeginTransaction())
             {
                 try
@@ -317,32 +322,6 @@ namespace PhotoSN.Data.Repositories
             }
         }
 
-        public async Task<GetPostDto> GetPostAsync(int postId)
-        {
-            try
-            {
-                var post = await _photoSNDbContext.Posts
-                    .Include(p => p.User)
-                        .ThenInclude(u => u.Avatars)
-                    .Include(p => p.PostImages)
-                    .Include(p => p.PostLikes)
-                    .Include(p => p.Comments)
-                    .FirstOrDefaultAsync(p => p.PostId == postId);
-                if (post == null)
-                {
-                    throw new ArgumentException("Post not found.");
-                }
-
-                var getPostDto = _mapper.Map<GetPostDto>(post);
-
-                return getPostDto;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
         public async Task<GetFullPostDto> GetFullPostAsync(int postId)
         {
             try
@@ -371,26 +350,43 @@ namespace PhotoSN.Data.Repositories
             }
         }
 
-        public async Task<List<int>> GetPostsByUserIdAsync(int userId, int? postId = int.MaxValue)
+        public async Task<List<GetPostDto>> GetPostsByUserIdAsync(
+            int userId,
+            bool isAuthorized,
+            int currentUserId,
+            int postId)
         {
             try
             {
                 var user = await _photoSNDbContext.Users
+                    .Include(u => u.Avatars)
+                    .Include(u => u.Posts)
+                        .ThenInclude(p => p.PostImages)
+                    .Include(u => u.Posts)
+                        .ThenInclude(p => p.PostLikes)
+                    .Include(u => u.Posts)
+                        .ThenInclude(p => p.Comments)
                     .FirstOrDefaultAsync(u => u.Id == userId);
                 if (user == null)
                 {
                     throw new ArgumentException($"User with id {userId} does not exist.");
                 }
 
-                var postIds = await _photoSNDbContext.Posts
-                    .Include(p => p.User)
-                    .Where(p => p.User == user && p.PostId < postId)
+                var posts = user.Posts
+                    .Where(p => p.PostId < postId)
                     .Reverse()
-                    .Take(10)
-                    .Select(p => p.PostId)
-                    .ToListAsync();
+                    .Take(5)
+                    .ToList();
 
-                return postIds;
+                var getPostDtos = _mapper.Map<List<GetPostDto>>(posts);
+                foreach (var getPostDto in getPostDtos)
+                {
+                    getPostDto.IsAuthorized = isAuthorized;
+                    getPostDto.IsLiked = getPostDto.Likes.Contains(currentUserId);
+                    getPostDto.IsNotLiked = !getPostDto.IsLiked;
+                }
+
+                return getPostDtos;
             }
             catch (Exception e)
             {
@@ -398,11 +394,14 @@ namespace PhotoSN.Data.Repositories
             }
         }
 
-        public async Task<List<int>> GetFeedByUserIdAsync(int userId, int? postId)
+        public async Task<List<GetPostDto>> GetFeedByUserIdAsync(
+            int userId,
+            int postId)
         {
             try
             {
                 var user = await _photoSNDbContext.Users
+                    .Include(u => u.Avatars)
                     .Include(u => u.Following)
                     .FirstOrDefaultAsync(u => u.Id == userId);
                 if (user == null)
@@ -412,15 +411,27 @@ namespace PhotoSN.Data.Repositories
 
                 var feedIds = user.Following.Select(s => s.SecondUserId).ToList();
 
-                var postIds = await _photoSNDbContext.Posts
+                var posts = await _photoSNDbContext.Posts
                     .Include(p => p.User)
+                        .ThenInclude(u => u.Avatars)
+                    .Include(p => p.PostImages)
+                    .Include(p => p.PostLikes)
+                    .Include(p => p.Comments)
                     .Where(p => feedIds.Contains(p.User.Id) && p.PostId < postId)
-                    .Reverse()
-                    .Take(10)
-                    .Select(p => p.PostId)
                     .ToListAsync();
 
-                return postIds;
+                posts.Reverse();
+                posts = posts.Take(10).ToList();
+
+                var getPostDtos = _mapper.Map<List<GetPostDto>>(posts);
+                foreach (var getPostDto in getPostDtos)
+                {
+                    getPostDto.IsAuthorized = true;
+                    getPostDto.IsLiked = getPostDto.Likes.Contains(userId);
+                    getPostDto.IsNotLiked = !getPostDto.IsLiked;
+                }
+
+                return getPostDtos;
             }
             catch (Exception e)
             {
@@ -583,6 +594,57 @@ namespace PhotoSN.Data.Repositories
             catch (Exception e)
             {
                 throw e;
+            }
+        }
+
+        public async Task<bool> LikeOrDislikePostAsync(int userId, int postId)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = await _photoSNDbContext.Users.FindAsync(userId);
+                    if (user == null)
+                    {
+                        throw new ArgumentException($"User with id {userId} does not exist.");
+                    }
+                    var post = await _photoSNDbContext.Posts.FindAsync(postId);
+                    if (post == null)
+                    {
+                        throw new ArgumentException($"Post with id {postId} does not exist.");
+                    }
+
+                    var existingPostLike = await _photoSNDbContext.PostLikes
+                        .FirstOrDefaultAsync(pl => pl.User == user && pl.Post == post);
+
+                    bool isLikedNow;
+                    if (existingPostLike == null)
+                    {
+                        var newPostLike = new PostLike
+                        {
+                            PostId = postId,
+                            UserId = userId,
+                            Created = DateTime.Now
+                        };
+                        await _photoSNDbContext.PostLikes.AddAsync(newPostLike);
+                        isLikedNow = true;
+                    }
+                    else
+                    {
+                        _photoSNDbContext.PostLikes.Remove(existingPostLike);
+                        isLikedNow = false;
+                    }
+
+                    await _photoSNDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return isLikedNow;
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
             }
         }
     }

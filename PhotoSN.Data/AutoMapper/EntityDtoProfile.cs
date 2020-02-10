@@ -32,14 +32,16 @@ namespace PhotoSN.Data.AutoMapper
                 .ForMember(gpd => gpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.UserId)))
                 .ForMember(gpd => gpd.ImageIds, opt => opt.MapFrom(
                     p => p.PostImages
-                    .OrderBy(p => p.OrderNumber)
-                    .Select(p => p.ImageId)));
+                        .OrderBy(p => p.OrderNumber)
+                        .Select(p => p.ImageId)))
+                .ForMember(gpd => gpd.Created, opt => opt.MapFrom(p => p.Created.ToString("g")))
+                .ForMember(gpd => gpd.LikesAmount, opt => opt.MapFrom(p => p.PostLikes.Count));
 
             CreateMap<Post, GetFullPostDto>()
                 .ForMember(gfpd => gfpd.ImageIds, opt => opt.MapFrom(
                     p => p.PostImages
-                    .OrderBy(p => p.OrderNumber)
-                    .Select(p => p.ImageId)))
+                        .OrderBy(p => p.OrderNumber)
+                        .Select(p => p.ImageId)))
                 .ForMember(gfpd => gfpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.User)));
 
             CreateMap<User, GetUserDto>()

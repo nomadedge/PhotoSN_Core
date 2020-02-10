@@ -1,0 +1,43 @@
+﻿{{#Posts}}
+<div class="Post" data-postid="{{postId}}" style="margin: 4px;">
+    <hr />
+    <div class="PostUserBar" data-userid="{{user.userId}}">
+        <a class="row" href="/Users/GetUser/{{user.userId}}">
+            <img class="UserBarAvatarImage"
+                 src="@Url.Action("GetImage", "Images")/{{user.avatarImageId}}"
+                 onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+            <div style="font-size: 24px;">
+                {{user.nickname}}
+            </div>
+        </a>
+    </div>
+
+    <div class="row" style="font-size: 14px;">
+        <div style="color: dimgray; margin-right: 20px;">
+            {{created}}
+        </div>
+        <a href="@Url.Action("GetFullPost", "Posts")/{{postId}}" target="_blank">View full post with comments</a>
+    </div>
+
+    <p style="font-size: 18px;">{{description}}</p>
+
+    <div class="PostImages">
+        {{#imageIds}}
+        <img class="PostImage" src="@Url.Action("GetImage", "Images")/{{.}}" />
+        {{/imageIds}}
+    </div>
+    <div class="row" style="margin-top: 5px;">
+        {{#isAuthorized}}
+        {{#isLiked}}
+        <button style="margin-right: 20px;" class="btn btn-danger" id="LikeButton" data-postid="{{postId}}" onclick="LikeOrDislikePost(this)">Dislike</button>
+        {{/isLiked}}
+        {{#isNotLiked}}
+        <button style="margin-right: 20px;" class="btn btn-primary" id="LikeButton" data-postid="{{postId}}" onclick="LikeOrDislikePost(this)">Like</button>
+        {{/isNotLiked}}
+        {{/isAuthorized}}
+
+        <p style="margin-right: 20px; margin-top: auto; margin-bottom: auto;">Likes <span style="font-weight: bold;" id="LikeAmount{{postId}}">{{likesAmount}}</span></p>
+        <p style="margin-top: auto; margin-bottom: auto;">Comments <span style="font-weight: bold;">{{commentsAmount}}</span></p>
+    </div>
+</div>
+{{/Posts}}

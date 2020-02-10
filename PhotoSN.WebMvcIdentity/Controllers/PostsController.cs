@@ -66,20 +66,6 @@ namespace PhotoSN.WebMvcIdentity.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPost(int id)
-        {
-            try
-            {
-                var getPostDto = await _photoSNRepository.GetPostAsync(id);
-                return View(getPostDto);
-            }
-            catch (Exception e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
-        [HttpGet]
         public async Task<IActionResult> GetFullPost(int id)
         {
             try
@@ -93,13 +79,66 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPostsByUserId(int userId, int? postId = int.MaxValue)
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> LikeOrDislikePost(int id)
         {
             try
             {
-                var postIds = await _photoSNRepository.GetPostsByUserIdAsync(userId, postId);
-                return Json(postIds);
+                var userId = (await _userManager.GetUserAsync(User)).Id;
+                var isLikedNow = await _photoSNRepository.LikeOrDislikePostAsync(userId, id);
+                return Ok(isLikedNow);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPostsByUserId(int id, int? postId = int.MaxValue)
+        {
+            try
+            {
+                bool isAuthorized;
+                int currentUserId;
+
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    isAuthorized = false;
+                    currentUserId = 0;
+                }
+                else
+                {
+                    isAuthorized = true;
+                    currentUserId = user.Id;
+                }
+
+                var posts = await _photoSNRepository.GetPostsByUserIdAsync(id, isAuthorized, currentUserId, postId.Value);
+                return Json(posts);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetFeed(int? postId = int.MaxValue)
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                }
+
+                var posts = await _photoSNRepository.GetFeedByUserIdAsync(user.Id, postId.Value);
+
+                return Json(posts);
             }
             catch (Exception e)
             {

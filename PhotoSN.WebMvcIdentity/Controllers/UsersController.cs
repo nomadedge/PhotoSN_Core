@@ -62,7 +62,7 @@ namespace PhotoSN.WebMvcIdentity.Controllers
             {
                 return BadRequest(e.Message);
             }
-            
+
         }
 
         [HttpDelete]
