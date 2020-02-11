@@ -25,7 +25,9 @@ namespace PhotoSN.Data.AutoMapper
                     u => u.GetCurrentAvatarImageId()));
 
             CreateMap<Comment, GetCommentDto>()
-                .ForMember(gcd => gcd.Likes, opt => opt.MapFrom(c => c.CommentLikes.Select(cl => cl.User)));
+                .ForMember(gcd => gcd.Likes, opt => opt.MapFrom(c => c.CommentLikes.Select(cl => cl.UserId)))
+                .ForMember(gpd => gpd.Created, opt => opt.MapFrom(p => p.Created.ToString("g")))
+                .ForMember(gpd => gpd.LikesAmount, opt => opt.MapFrom(p => p.CommentLikes.Count));
 
             CreateMap<Post, GetPostDto>()
                 .ForMember(gpd => gpd.CommentsAmount, opt => opt.MapFrom(p => p.Comments.Count))
@@ -42,7 +44,9 @@ namespace PhotoSN.Data.AutoMapper
                     p => p.PostImages
                         .OrderBy(p => p.OrderNumber)
                         .Select(p => p.ImageId)))
-                .ForMember(gfpd => gfpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.User)));
+                .ForMember(gfpd => gfpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.User)))
+                .ForMember(gfpd => gfpd.CommentsAmount, opt => opt.MapFrom(p => p.Comments.Count))
+                .ForMember(gpd => gpd.Created, opt => opt.MapFrom(p => p.Created.ToString("g")));
 
             CreateMap<User, GetUserDto>()
                 .ForMember(gud => gud.UserId, opt => opt.MapFrom(u => u.Id))
@@ -50,6 +54,8 @@ namespace PhotoSN.Data.AutoMapper
                     u => u.GetCurrentAvatarImageId()))
                 .ForMember(gud => gud.Followers, opt => opt.Ignore())
                 .ForMember(gud => gud.Following, opt => opt.Ignore());
+
+            CreateMap<CreateCommentDto, Comment>();
         }
     }
 }

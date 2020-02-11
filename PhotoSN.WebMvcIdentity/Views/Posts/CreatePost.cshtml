@@ -10,6 +10,7 @@
             max-height: 200px;
             max-width: 600px;
             border-radius: 10px;
+            margin: 2px;
         }
     </style>
 }
@@ -73,7 +74,7 @@
                 "ImageIds": imageIds
             };
             $.post("@Url.Action("CreatePost")", post)
-                .done(function (result) {
+                .done(function () {
                     window.location.replace("@Url.Action("GetUser", "Users")/" + @((await UserManager.GetUserAsync(User)).Id));
                 })
                 .fail(function (xhr) {

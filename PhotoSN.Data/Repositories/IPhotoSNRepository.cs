@@ -24,5 +24,8 @@ namespace PhotoSN.Data.Repositories
         Task<List<GetSimpleUserDto>> GetFollowersAsync(int userId);
         Task<List<GetSimpleUserDto>> GetFollowingsAsync(int userId);
         Task<bool> LikeOrDislikePostAsync(int userId, int postId);
+        Task<List<GetCommentDto>> GetCommentsByPostIdAsync(int postId, bool isAuthorized, int currentUserId, int commentId);
+        Task<bool> LikeOrDislikeCommentAsync(int userId, int commentId);
+        Task<GetCommentDto> CreateCommentAsync(CreateCommentDto createCommentDto);
     }
 }

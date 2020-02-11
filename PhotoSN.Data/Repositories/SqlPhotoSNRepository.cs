@@ -647,5 +647,151 @@ namespace PhotoSN.Data.Repositories
                 }
             }
         }
+
+        public async Task<List<GetCommentDto>> GetCommentsByPostIdAsync(
+            int postId,
+            bool isAuthorized,
+            int currentUserId,
+            int commentId)
+        {
+            try
+            {
+                var post = await _photoSNDbContext.Posts
+                    .Include(p => p.Comments)
+                        .ThenInclude(c => c.User)
+                            .ThenInclude(u => u.Avatars)
+                    .Include(p => p.Comments)
+                        .ThenInclude(c => c.CommentLikes)
+                    .FirstOrDefaultAsync(p => p.PostId == postId);
+                if (post == null)
+                {
+                    throw new ArgumentException($"Post with id {postId} does not exist.");
+                }
+
+                var comments = post.Comments
+                    .Where(c => c.CommentId < commentId)
+                    .Reverse()
+                    .Take(5)
+                    .ToList();
+
+                var getCommentDtos = _mapper.Map<List<GetCommentDto>>(comments);
+                foreach (var getCommentDto in getCommentDtos)
+                {
+                    getCommentDto.IsAuthorized = isAuthorized;
+                    getCommentDto.IsLiked = getCommentDto.Likes.Contains(currentUserId);
+                    getCommentDto.IsNotLiked = !getCommentDto.IsLiked;
+                }
+
+                return getCommentDtos;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<bool> LikeOrDislikeCommentAsync(int userId, int commentId)
+        {
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = await _photoSNDbContext.Users.FindAsync(userId);
+                    if (user == null)
+                    {
+                        throw new ArgumentException($"User with id {userId} does not exist.");
+                    }
+                    var comment = await _photoSNDbContext.Comments.FindAsync(commentId);
+                    if (comment == null)
+                    {
+                        throw new ArgumentException($"Comment with id {commentId} does not exist.");
+                    }
+
+                    var existingCommentLike = await _photoSNDbContext.CommentLikes
+                        .FirstOrDefaultAsync(cl => cl.User == user && cl.Comment == comment);
+
+                    bool isLikedNow;
+                    if (existingCommentLike == null)
+                    {
+                        var newCommentLike = new CommentLike
+                        {
+                            CommentId = commentId,
+                            UserId = userId,
+                            Created = DateTime.Now
+                        };
+                        await _photoSNDbContext.CommentLikes.AddAsync(newCommentLike);
+                        isLikedNow = true;
+                    }
+                    else
+                    {
+                        _photoSNDbContext.CommentLikes.Remove(existingCommentLike);
+                        isLikedNow = false;
+                    }
+
+                    await _photoSNDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return isLikedNow;
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
+        public async Task<GetCommentDto> CreateCommentAsync(CreateCommentDto createCommentDto)
+        {
+            if (createCommentDto == null ||
+                string.IsNullOrWhiteSpace(createCommentDto.Text))
+            {
+                throw new ArgumentException("Comment can't be empty or consists only a white-space characters.");
+            }
+
+            using (var transaction = _photoSNDbContext.Database.BeginTransaction())
+            {
+                try
+                {
+                    var user = await _photoSNDbContext.Users
+                        .Include(u => u.Avatars)
+                        .FirstOrDefaultAsync(u => u.Id == createCommentDto.UserId);
+                    if (user == null)
+                    {
+                        throw new ArgumentException($"User with id {createCommentDto.UserId} does not exist.");
+                    }
+
+                    var post = await _photoSNDbContext.Posts
+                        .FirstOrDefaultAsync(p => p.PostId == createCommentDto.PostId);
+                    if (post == null)
+                    {
+                        throw new ArgumentException($"Post with id {createCommentDto.PostId} does not exist.");
+                    }
+
+                    var comment = _mapper.Map<Comment>(createCommentDto);
+                    comment.User = user;
+                    comment.Post = post;
+                    comment.Created = DateTime.Now;
+
+                    await _photoSNDbContext.Comments.AddAsync(comment);
+
+                    await _photoSNDbContext.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    var getCommentDto = _mapper.Map<GetCommentDto>(comment);
+                    getCommentDto.IsAuthorized = true;
+                    getCommentDto.IsLiked = false;
+                    getCommentDto.IsNotLiked = !getCommentDto.IsLiked;
+
+                    return getCommentDto;
+                }
+                catch (Exception e)
+                {
+                    transaction.Rollback();
+                    throw e;
+                }
+            }
+        }
+
     }
 }

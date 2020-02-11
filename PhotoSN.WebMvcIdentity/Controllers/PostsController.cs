@@ -145,5 +145,75 @@ namespace PhotoSN.WebMvcIdentity.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetCommentsByPostId(int id, int? commentId = int.MaxValue)
+        {
+            try
+            {
+                bool isAuthorized;
+                int currentUserId;
+
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    isAuthorized = false;
+                    currentUserId = 0;
+                }
+                else
+                {
+                    isAuthorized = true;
+                    currentUserId = user.Id;
+                }
+
+                var comments = await _photoSNRepository.GetCommentsByPostIdAsync(id, isAuthorized, currentUserId, commentId.Value);
+                return Json(comments);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> LikeOrDislikeComment(int id)
+        {
+            try
+            {
+                var userId = (await _userManager.GetUserAsync(User)).Id;
+                var isLikedNow = await _photoSNRepository.LikeOrDislikeCommentAsync(userId, id);
+                return Ok(isLikedNow);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateComment(CommentModel commentModel)
+        {
+            try
+            {
+                if (commentModel == null ||
+                    string.IsNullOrWhiteSpace(commentModel.Text))
+                {
+                    throw new ArgumentException("Comment can't be empty or consists only a white-space characters.");
+                }
+
+                var userId = (await _userManager.GetUserAsync(User)).Id;
+                var createCommentDto = _mapper.Map<CreateCommentDto>(commentModel);
+                createCommentDto.UserId = userId;
+
+                var newComment = await _photoSNRepository.CreateCommentAsync(createCommentDto);
+                return Json(newComment);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

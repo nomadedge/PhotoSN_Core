@@ -20,6 +20,8 @@ namespace PhotoSN.WebMvcIdentity.AutoMapper
             CreateMap<PostModel, CreatePostDto>();
 
             CreateMap<GetUserDto, UserModel>();
+
+            CreateMap<CommentModel, CreateCommentDto>();
         }
     }
 }

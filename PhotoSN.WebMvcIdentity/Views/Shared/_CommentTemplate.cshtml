@@ -1,0 +1,33 @@
+﻿{{#Comments}}
+<div class="Comment" data-commentid="{{commentId}}" style="margin: 4px;">
+    <hr />
+    <div class="col-sm-12 row">
+        <a href="/Users/GetUser/{{user.userId}}">
+            <img class="AvatarImage"
+                 src="@Url.Action("GetImage", "Images")/{{user.avatarImageId}}"
+                 onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+        </a>
+        <div>
+            <a href="/Users/GetUser/{{user.userId}}">
+                <div>{{user.nickname}}</div>
+            </a>
+            <div>{{created}}</div>
+        </div>
+    </div>
+
+    <p style="font-size: 18px;">{{text}}</p>
+
+    <div class="row" style="margin-top: 5px;">
+        {{#isAuthorized}}
+        {{#isLiked}}
+        <button style="margin-right: 20px;" class="btn btn-danger" id="LikeButton" data-commentid="{{commentId}}" onclick="LikeOrDislikeComment(this)">Dislike</button>
+        {{/isLiked}}
+        {{#isNotLiked}}
+        <button style="margin-right: 20px;" class="btn btn-primary" id="LikeButton" data-commentid="{{commentId}}" onclick="LikeOrDislikeComment(this)">Like</button>
+        {{/isNotLiked}}
+        {{/isAuthorized}}
+
+        <p style="margin-top: auto; margin-bottom: auto;">Likes <span style="font-weight: bold;" id="CommentLikeAmount{{commentId}}">{{likesAmount}}</span></p>
+    </div>
+</div>
+{{/Comments}}

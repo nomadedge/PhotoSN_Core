@@ -133,7 +133,7 @@
                 .done(function (res) {
                     if (Array.isArray(res)) {
                         if (res.length == 0) {
-                            hasMorePosts = false
+                            hasMorePosts = false;
                         }
                         else {
                             $("#Posts").append(postTemplate.render({ Posts: res }));

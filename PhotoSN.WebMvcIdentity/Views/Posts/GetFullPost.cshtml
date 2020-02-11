@@ -1,7 +1,9 @@
 ﻿@model PhotoSN.Data.Dtos.GetFullPostDto
 
 @{
-    ViewData["Title"] = "Post from" + Model.User.Nickname;
+    ViewData["Title"] = "Post by " + Model.User.Nickname;
+    var currentUser = await UserManager.GetUserAsync(User);
+    var commentTemplate = await Html.PartialAsync("_CommentTemplate");
 }
 
 @section Styles {
@@ -9,10 +11,10 @@
         .GetFullPostImage {
             max-width: 100%;
             max-height: 100vh;
-            margin: 2px;
+            margin: 5px;
         }
 
-        .FullPostAvatarImage {
+        .AvatarImage {
             height: 50px;
             width: 50px;
             border-radius: 50px;
@@ -21,20 +23,172 @@
     </style>
 }
 
+@section Scripts {
+    <script type="text/template" id="commentTemplate">
+        @commentTemplate
+    </script>
+
+    <script>
+        var hasMoreComments = true;
+        var commentTemplate = Hogan.compile($("#commentTemplate").html());
+        var isLoading = false;
+
+        function LikeOrDislikePost(elem) {
+            var postId = elem.getAttribute("data-postid");
+            var likeButton = $("button[data-postid=" + postId + "]");
+            var likeAmountSpan = $("#LikeAmount" + postId);
+
+            likeButton.attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("LikeOrDislikePost", "Posts")/" + postId,
+                type: "POST",
+                success: function (res) {
+                    if (res) {
+                        if (likeButton.text() == "Like") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) + 1);
+                        }
+                        likeButton.text("Dislike");
+                        likeButton.attr("class", "btn btn-danger");
+                    }
+                    else {
+                        if (likeButton.text() == "Dislike") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) - 1);
+                        }
+                        likeButton.text("Like");
+                        likeButton.attr("class", "btn btn-primary");
+                    }
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    likeButton.removeAttr("disabled");
+                }
+            });
+        };
+
+        function GetMoreComments() {
+            if (!isLoading) {
+                isLoading = true;
+                var lastId = $(".Comment").last().data("commentid");
+                var urlString = "@Url.Action("GetCommentsByPostId", "Posts")/@Model.PostId";
+                if (lastId != null) {
+                    urlString += "?commentId=" + lastId;
+                }
+                $.get(urlString)
+                    .done(function (res) {
+                        if (Array.isArray(res)) {
+                            if (res.length == 0) {
+                                hasMoreComments = false;
+                            }
+                            else {
+                                $("#Comments").append(commentTemplate.render({ Comments: res }));
+                            }
+                        }
+                    })
+                    .always(function () {
+                        isLoading = false;
+                    });
+            }
+        }
+
+        $(window).on("scroll", function() {
+            var scrollTop = $(window).scrollTop();
+            var documentHeight = $(document).height();
+            var windowHeight = $(window).height();
+
+            if (documentHeight - scrollTop < windowHeight * 1.5 && hasMoreComments) {
+                GetMoreComments();
+	        }
+        });
+
+        function LikeOrDislikeComment(elem) {
+            var commentId = elem.getAttribute("data-commentid");
+            var likeButton = $("button[data-commentId=" + commentId + "]");
+            var likeAmountSpan = $("#CommentLikeAmount" + commentId);
+
+            likeButton.attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("LikeOrDislikeComment", "Posts")/" + commentId,
+                type: "POST",
+                success: function (res) {
+                    if (res) {
+                        if (likeButton.text() == "Like") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) + 1);
+                        }
+                        likeButton.text("Dislike");
+                        likeButton.attr("class", "btn btn-danger");
+                    }
+                    else {
+                        if (likeButton.text() == "Dislike") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) - 1);
+                        }
+                        likeButton.text("Like");
+                        likeButton.attr("class", "btn btn-primary");
+                    }
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    likeButton.removeAttr("disabled");
+                }
+            });
+        }
+
+        function DisableEnableButton(elem) {
+            if (!elem.value || !elem.value.trim()) {
+                $("#CommentButton").attr("disabled", "disabled");
+            }
+            else {
+                $("#CommentButton").removeAttr("disabled");
+            }
+        }
+
+        function PostComment() {
+            var commentButton = $("#CommentButton");
+            var commentTextarea = $("#CommentTextarea");
+            var commentAmountSpan = $("#CommentAmount" + @Model.PostId);
+
+            commentButton.attr("disabled");
+            var comment = {
+                "PostId": @Model.PostId,
+                "Text": commentTextarea.val()
+            };
+            $.post("@Url.Action("CreateComment", "Posts")", comment)
+                .done(function (res) {
+                    $("#Comments").prepend(commentTemplate.render({ Comments: res }));
+                    commentTextarea.val("");
+                    commentAmountSpan.text(parseInt(commentAmountSpan.text()) + 1);
+                })
+                .fail(function (xhr) {
+                    alert(xhr.responseText);
+                })
+                .always(function () {
+                    commentButton.removeAttr("disabled");
+                });
+        }
+    </script>
+}
+
 <div class="row">
-    <div class="col-sm-12 row">
-        <img class="FullPostAvatarImage"
-             src="@Url.Action("GetImage", "Images", new { id=Model.User.AvatarImageId })"
-             onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+    <div class="col-md-12 row">
+        <a href="@Url.Action("GetUser", "Users", new { id=Model.User.UserId })">
+            <img class="AvatarImage"
+                 src="@Url.Action("GetImage", "Images", new { id=Model.User.AvatarImageId })"
+                 onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
+        </a>
         <div>
-            <div>@Html.DisplayFor(model => model.User.Nickname)</div>
+            <a href="@Url.Action("GetUser", "Users", new { id=Model.User.UserId })">
+                <div>@Html.DisplayFor(model => model.User.Nickname)</div>
+            </a>
             <div>@Html.DisplayFor(model => model.Created)</div>
         </div>
     </div>
-    <div class="col-sm-12">
+    <div class="col-md-12" style="font-size: 18px; margin-bottom: 10px;">
         @Html.DisplayFor(model => model.Description)
     </div>
-    <div class="col-sm-12">
+    <div class="col-md-12">
         <ul style="list-style:none; padding:0;">
             @foreach (var imageId in Model.ImageIds)
             {
@@ -44,28 +198,37 @@
             }
         </ul>
     </div>
-    <div class="col-sm-12 row">
-        @Html.DisplayFor(model => model.Likes.Count)
-    </div>
-    <div class="col-sm-12">
-        <ul style="list-style:none; padding:0;">
-            @foreach (var comment in Model.Comments)
+
+    <div class="col-md-12 row" style="margin-top: 5px; margin-bottom: 5px;">
+        @if (User.Identity.IsAuthenticated)
+        {
+            if (Model.Likes.FirstOrDefault(l => l.UserId == currentUser.Id) != null)
             {
-                <li class="row">
-                    <div class="col-sm-12">
-                        <img class="FullPostAvatarImage"
-                             src="@Url.Action("GetImage", "Images", new { id=comment.User.AvatarImageId })"
-                             onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
-                        <div>
-                            <p>@comment.User.Nickname</p>
-                            <p>@comment.Created</p>
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <p>@comment.Text</p>
-                    </div>
-                </li>
+                <button style="margin-right: 20px;" class="btn btn-danger" id="LikeButton" data-postid="@Model.PostId" onclick="LikeOrDislikePost(this)">Dislike</button>
             }
-        </ul>
+            else
+            {
+                <button style="margin-right: 20px;" class="btn btn-primary" id="LikeButton" data-postid="@Model.PostId" onclick="LikeOrDislikePost(this)">Like</button>
+            }
+        }
+
+        <p style="margin-right: 20px; margin-top: auto; margin-bottom: auto;">Likes <span style="font-weight: bold;" id="LikeAmount@(Model.PostId)">@Model.Likes.Count</span></p>
+        <p style="margin-top: auto; margin-bottom: auto;">Comments <span style="font-weight: bold;" id="CommentAmount@(Model.PostId)">@Model.CommentsAmount</span></p>
+    </div>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="col-md-12">
+            <input type="text" id="CommentTextarea"
+                   class="form-control"
+                   oninput="DisableEnableButton(this)"
+                   style="resize: none; margin-bottom: 5px;"
+                   placeholder="Write your comment here...">
+            <button class="btn btn-primary" id="CommentButton" onclick="PostComment()" style="float: right;" disabled>Comment</button>
+        </div>
+    }
+
+    <div class="col-md-12" id="Comments">
+
     </div>
 </div>
