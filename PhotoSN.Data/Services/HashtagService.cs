@@ -28,9 +28,10 @@ namespace PhotoSN.Data.Services
                 if (match.Success)
                 {
                     var hashtag = match.Groups[0].ToString().ToLower();
-                    if (!string.IsNullOrEmpty(hashtag) && !hashtags.Contains(hashtag))
+                    var hashtagWord = hashtag.Substring(1);
+                    if (!string.IsNullOrEmpty(hashtag) && !hashtags.Contains(hashtagWord))
                     {
-                        hashtags.Add(hashtag.Substring(1));
+                        hashtags.Add(hashtagWord);
                     }
                 }
             }
