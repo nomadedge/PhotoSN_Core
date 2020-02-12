@@ -334,6 +334,8 @@ namespace PhotoSN.Data.Repositories
                         .ThenInclude(pl => pl.User)
                     .Include(p => p.Comments)
                         .ThenInclude(c => c.User)
+                    .Include(p => p.InPostHashtags)
+                        .ThenInclude(iph => iph.Hashtag)
                     .FirstOrDefaultAsync(p => p.PostId == postId);
                 if (post == null)
                 {
@@ -366,6 +368,9 @@ namespace PhotoSN.Data.Repositories
                         .ThenInclude(p => p.PostLikes)
                     .Include(u => u.Posts)
                         .ThenInclude(p => p.Comments)
+                    .Include(u => u.Posts)
+                        .ThenInclude(p => p.InPostHashtags)
+                            .ThenInclude(iph => iph.Hashtag)
                     .FirstOrDefaultAsync(u => u.Id == userId);
                 if (user == null)
                 {
@@ -417,6 +422,8 @@ namespace PhotoSN.Data.Repositories
                     .Include(p => p.PostImages)
                     .Include(p => p.PostLikes)
                     .Include(p => p.Comments)
+                    .Include(p => p.InPostHashtags)
+                        .ThenInclude(iph => iph.Hashtag)
                     .Where(p => feedIds.Contains(p.User.Id) && p.PostId < postId)
                     .ToListAsync();
 
@@ -835,6 +842,8 @@ namespace PhotoSN.Data.Repositories
                     .Include(p => p.PostImages)
                     .Include(p => p.PostLikes)
                     .Include(p => p.Comments)
+                    .Include(p => p.InPostHashtags)
+                        .ThenInclude(iph => iph.Hashtag)
                     .Where(p => postIds.Contains(p.PostId))
                     .ToListAsync();
 

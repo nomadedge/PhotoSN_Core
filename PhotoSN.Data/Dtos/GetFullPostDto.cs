@@ -11,5 +11,6 @@ namespace PhotoSN.Data.Dtos
         public List<int> ImageIds { get; set; }
         public int CommentsAmount { get; set; }
         public List<GetSimpleUserDto> Likes { get; set; }
+        public List<string> Hashtags { get; set; }
     }
 }

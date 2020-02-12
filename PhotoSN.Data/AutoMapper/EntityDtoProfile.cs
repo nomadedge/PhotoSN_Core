@@ -37,7 +37,9 @@ namespace PhotoSN.Data.AutoMapper
                         .OrderBy(p => p.OrderNumber)
                         .Select(p => p.ImageId)))
                 .ForMember(gpd => gpd.Created, opt => opt.MapFrom(p => p.Created.ToString("g")))
-                .ForMember(gpd => gpd.LikesAmount, opt => opt.MapFrom(p => p.PostLikes.Count));
+                .ForMember(gpd => gpd.LikesAmount, opt => opt.MapFrom(p => p.PostLikes.Count))
+                .ForMember(gpd => gpd.Hashtags, opt => opt.MapFrom(p => p.InPostHashtags.Select(iph => iph.Hashtag.Text)))
+                .ForMember(gpd => gpd.HasHashtags, opt => opt.MapFrom(p => p.InPostHashtags.Any()));
 
             CreateMap<Post, GetFullPostDto>()
                 .ForMember(gfpd => gfpd.ImageIds, opt => opt.MapFrom(
@@ -46,7 +48,8 @@ namespace PhotoSN.Data.AutoMapper
                         .Select(p => p.ImageId)))
                 .ForMember(gfpd => gfpd.Likes, opt => opt.MapFrom(p => p.PostLikes.Select(pl => pl.User)))
                 .ForMember(gfpd => gfpd.CommentsAmount, opt => opt.MapFrom(p => p.Comments.Count))
-                .ForMember(gpd => gpd.Created, opt => opt.MapFrom(p => p.Created.ToString("g")));
+                .ForMember(gfpd => gfpd.Created, opt => opt.MapFrom(p => p.Created.ToString("g")))
+                .ForMember(gfpd => gfpd.Hashtags, opt => opt.MapFrom(p => p.InPostHashtags.Select(iph => iph.Hashtag.Text)));
 
             CreateMap<User, GetUserDto>()
                 .ForMember(gud => gud.UserId, opt => opt.MapFrom(u => u.Id))

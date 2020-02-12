@@ -15,5 +15,7 @@ namespace PhotoSN.Data.Dtos
         public bool IsAuthorized { get; set; }
         public bool IsLiked { get; set; }
         public bool IsNotLiked { get; set; }
+        public List<string> Hashtags { get; set; }
+        public bool HasHashtags { get; set; }
     }
 }

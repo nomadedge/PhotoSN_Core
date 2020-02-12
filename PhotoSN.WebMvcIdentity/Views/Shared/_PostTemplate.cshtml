@@ -19,6 +19,17 @@
         <a href="@Url.Action("GetFullPost", "Posts")/{{postId}}" target="_blank">View full post with comments</a>
     </div>
 
+    {{#hasHashtags}}
+    <p>
+        Tags:
+        {{#hashtags}}
+        <a href="/Search/SearchPostsByHashtags?query={{.}}" target="_blank">
+            {{.}} 
+        </a>
+        {{/hashtags}}
+    </p>
+    {{/hasHashtags}}
+
     <p style="font-size: 18px;">{{description}}</p>
 
     <div class="PostImages">
