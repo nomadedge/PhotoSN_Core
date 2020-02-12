@@ -27,5 +27,7 @@ namespace PhotoSN.Data.Repositories
         Task<List<GetCommentDto>> GetCommentsByPostIdAsync(int postId, bool isAuthorized, int currentUserId, int commentId);
         Task<bool> LikeOrDislikeCommentAsync(int userId, int commentId);
         Task<GetCommentDto> CreateCommentAsync(CreateCommentDto createCommentDto);
+        Task<List<GetSimpleUserDto>> GetUsersByNicknameAsync(string query, int userId);
+        Task<List<GetPostDto>> GetPostsByHashtagsAsync(string query, bool isAuthorized, int currentUserId, int postId);
     }
 }

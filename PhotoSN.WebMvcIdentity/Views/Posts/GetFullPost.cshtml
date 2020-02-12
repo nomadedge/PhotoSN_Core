@@ -218,11 +218,11 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        <div class="col-md-12">
+        <div class="col-md-12" style="overflow: auto;">
             <input type="text" id="CommentTextarea"
                    class="form-control"
                    oninput="DisableEnableButton(this)"
-                   style="resize: none; margin-bottom: 5px;"
+                   style="margin-bottom: 5px;"
                    placeholder="Write your comment here...">
             <button class="btn btn-primary" id="CommentButton" onclick="PostComment()" style="float: right;" disabled>Comment</button>
         </div>

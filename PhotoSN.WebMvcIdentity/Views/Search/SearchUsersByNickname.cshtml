@@ -1,0 +1,96 @@
+﻿@model SearchModel
+@{
+    ViewData["Title"] = "Explore profiles";
+    var userBarTemplate = await Html.PartialAsync("_UserBarTemplate");
+}
+
+@section Scripts{
+    <script type="text/template" id="userBarTemplate">
+        @userBarTemplate
+    </script>
+
+    <script>
+        var hasMoreUsers = true;
+        var isLoading = false;
+        var userBarTemplate = Hogan.compile($("#userBarTemplate").html());
+
+        function DisableEnableButton(elem) {
+            if (!elem.value || !elem.value.trim()) {
+                $("#SearchButton").attr("disabled", "disabled");
+            }
+            else {
+                $("#SearchButton").removeAttr("disabled");
+            }
+        }
+
+        function SearchUsers() {
+            window.location.replace("@Url.Action("SearchUsersByNickname", "Search")?query=" + $("#SearchTextarea").val());
+        }
+
+        function GetMoreUsers() {
+            if (!isLoading) {
+                isLoading = true;
+                var searchButton = $("#SearchButton");
+
+                searchButton.attr("disabled");
+
+                var lastId = $(".UserBar").last().data("userid");
+                var urlString = "@Url.Action("GetUsers", "Search")";
+                if (lastId != null) {
+                    urlString += "?userId=" + lastId;
+                }
+
+                var query = {
+                    "Query": "@Model.Query"
+                };
+                
+                $.get(urlString, query)
+                    .done(function (res) {
+                        if (Array.isArray(res)) {
+                            if (res.length == 0) {
+                                hasMoreUsers = false;
+                            }
+                            else {
+                                $("#UserBars").append(userBarTemplate.render({ UserBars: res }));
+                            }
+                        }
+                    })
+                    .fail(function (xhr) {
+                        alert(xhr.responseText);
+                    })
+                    .always(function () {
+                        isLoading = false;
+                        if (query.Query != "") {
+                            searchButton.removeAttr("disabled");
+                        }
+                    });
+            }
+        }
+
+        GetMoreUsers();
+
+        $(window).on("scroll", function() {
+            var scrollTop = $(window).scrollTop();
+            var documentHeight = $(document).height();
+            var windowHeight = $(window).height();
+
+            if (documentHeight - scrollTop < windowHeight * 1.5 && hasMoreUsers) {
+                GetMoreUsers();
+	        }
+        });
+    </script>
+}
+
+<div class="col-md-12" style="overflow: auto;">
+    <input type="text" id="SearchTextarea"
+           class="form-control"
+           oninput="DisableEnableButton(this)"
+           style="margin-bottom: 5px;"
+           placeholder="Write the nickname here..."
+           value="@Model.Query">
+    <button class="btn btn-primary" id="SearchButton" onclick="SearchUsers()" style="float: right;" disabled>Search</button>
+</div>
+
+<div id="UserBars">
+
+</div>

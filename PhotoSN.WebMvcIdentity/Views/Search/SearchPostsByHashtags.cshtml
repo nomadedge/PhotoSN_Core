@@ -1,0 +1,148 @@
+﻿@model SearchModel
+@{
+    ViewData["Title"] = "Explore profiles";
+    var postTemplate = await Html.PartialAsync("_PostTemplate");
+}
+
+@section Styles {
+    <style>
+        .PostImage {
+            max-height: 200px;
+            max-width: 600px;
+            margin: 1px;
+            border-radius: 20px;
+        }
+
+        .AvatarImage {
+            height: 50px;
+            width: 50px;
+            border-radius: 50px;
+            margin: 5px;
+        }
+    </style>
+}
+
+@section Scripts{
+    <script type="text/template" id="postTemplate">
+        @postTemplate
+    </script>
+
+    <script>
+        var hasMorePosts = true;
+        var isLoading = false;
+        var postTemplate = Hogan.compile($("#postTemplate").html());
+
+        function DisableEnableButton(elem) {
+            if (!elem.value || !elem.value.trim()) {
+                $("#SearchButton").attr("disabled", "disabled");
+            }
+            else {
+                $("#SearchButton").removeAttr("disabled");
+            }
+        }
+
+        function LikeOrDislikePost(elem) {
+            var postId = elem.getAttribute("data-postid");
+            var likeButton = $("button[data-postid=" + postId + "]");
+            var likeAmountSpan = $("#LikeAmount" + postId);
+
+            likeButton.attr("disabled", "disabled");
+            $.ajax({
+                url: "@Url.Action("LikeOrDislikePost", "Posts")/" + postId,
+                type: "POST",
+                success: function (res) {
+                    if (res) {
+                        if (likeButton.text() == "Like") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) + 1);
+                        }
+                        likeButton.text("Dislike");
+                        likeButton.attr("class", "btn btn-danger");
+                    }
+                    else {
+                        if (likeButton.text() == "Dislike") {
+                            likeAmountSpan.text(parseInt(likeAmountSpan.text()) - 1);
+                        }
+                        likeButton.text("Like");
+                        likeButton.attr("class", "btn btn-primary");
+                    }
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    likeButton.removeAttr("disabled");
+                }
+            });
+        };
+
+        function SearchPosts() {
+            window.location.replace("@Url.Action("SearchPostsByHashtags", "Search")?query=" + $("#SearchTextarea").val());
+        }
+
+        function GetMorePosts() {
+            if (!isLoading) {
+                isLoading = true;
+                var searchButton = $("#SearchButton");
+
+                searchButton.attr("disabled");
+
+                var lastId = $(".Post").last().data("postid");
+                var urlString = "@Url.Action("GetPosts", "Search")";
+                if (lastId != null) {
+                    urlString += "?postId=" + lastId;
+                }
+
+                var query = {
+                    "Query": "@Model.Query"
+                };
+
+                $.get(urlString, query)
+                    .done(function (res) {
+                        if (Array.isArray(res)) {
+                            if (res.length == 0) {
+                                hasMorePosts = false;
+                            }
+                            else {
+                                $("#Posts").append(postTemplate.render({ Posts: res }));
+                            }
+                        }
+                    })
+                    .fail(function (xhr) {
+                        alert(xhr.responseText);
+                    })
+                    .always(function () {
+                        isLoading = false;
+                        if (query.Query != "") {
+                            searchButton.removeAttr("disabled");
+                        }
+                    });
+            }
+        }
+
+        GetMorePosts();
+
+        $(window).on("scroll", function() {
+            var scrollTop = $(window).scrollTop();
+            var documentHeight = $(document).height();
+            var windowHeight = $(window).height();
+
+            if (documentHeight - scrollTop < windowHeight * 1.5 && hasMorePosts) {
+                GetMorePosts();
+	        }
+        });
+    </script>
+}
+
+<div class="col-md-12" style="overflow: auto;">
+    <input type="text" id="SearchTextarea"
+           class="form-control"
+           oninput="DisableEnableButton(this)"
+           style="margin-bottom: 5px;"
+           placeholder="Write the hashtag here..."
+           value="@Model.Query">
+    <button class="btn btn-primary" id="SearchButton" onclick="SearchPosts()" style="float: right;" disabled>Search</button>
+</div>
+
+<div id="Posts">
+
+</div>

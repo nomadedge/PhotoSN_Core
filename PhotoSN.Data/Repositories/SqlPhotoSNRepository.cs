@@ -375,7 +375,7 @@ namespace PhotoSN.Data.Repositories
                 var posts = user.Posts
                     .Where(p => p.PostId < postId)
                     .Reverse()
-                    .Take(5)
+                    .Take(10)
                     .ToList();
 
                 var getPostDtos = _mapper.Map<List<GetPostDto>>(posts);
@@ -793,5 +793,65 @@ namespace PhotoSN.Data.Repositories
             }
         }
 
+        public async Task<List<GetSimpleUserDto>> GetUsersByNicknameAsync(string query, int userId)
+        {
+            try
+            {
+                var users = await _photoSNDbContext.Users
+                    .Include(u => u.Avatars)
+                    .Include(u => u.Followers)
+                    .Where(u => u.Nickname.Contains(query))
+                    .OrderBy(u => u.Followers.Count)
+                    .ToListAsync();
+
+                var getUserDtos = _mapper.Map<List<GetSimpleUserDto>>(users);
+
+                return getUserDtos;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<List<GetPostDto>> GetPostsByHashtagsAsync(string query, bool isAuthorized, int currentUserId, int postId)
+        {
+            try
+            {
+                var hashtag = await _photoSNDbContext.Hashtags
+                    .Include(h => h.InPostHashtags)
+                    .FirstOrDefaultAsync(h => h.Text == query);
+
+                var postIds = hashtag.InPostHashtags
+                    .OrderByDescending(iph => iph.PostId)
+                    .Where(iph => iph.PostId < postId)
+                    .Select(iph => iph.PostId)
+                    .Take(10)
+                    .ToList();
+
+                var posts = await _photoSNDbContext.Posts
+                    .Include(p => p.User)
+                        .ThenInclude(p => p.Avatars)
+                    .Include(p => p.PostImages)
+                    .Include(p => p.PostLikes)
+                    .Include(p => p.Comments)
+                    .Where(p => postIds.Contains(p.PostId))
+                    .ToListAsync();
+
+                var getPostDtos = _mapper.Map<List<GetPostDto>>(posts);
+                foreach (var getPostDto in getPostDtos)
+                {
+                    getPostDto.IsAuthorized = isAuthorized;
+                    getPostDto.IsLiked = getPostDto.Likes.Contains(currentUserId);
+                    getPostDto.IsNotLiked = !getPostDto.IsLiked;
+                }
+
+                return getPostDtos;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
     }
 }
