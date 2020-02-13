@@ -195,10 +195,10 @@
         <img class="AvatarImage"
              src="@Url.Action("GetImage", "Images", new { id=Model.AvatarImageId })"
              onerror="this.onerror=null;this.src='/defaultmedia/defaultavatar.jpeg';" />
-        <div style="margin-left: 10px;">
+        <div style="margin-left: 10px; max-width: 50%;">
             <div>
                 <div class="MainNickname">@Html.DisplayFor(model => model.Nickname)</div>
-                <div>@Html.DisplayFor(model => model.Bio)</div>
+                <div style="white-space: pre-line; margin-bottom: 10px;">@Html.DisplayFor(model => model.Bio)</div>
                 <div style="margin-right: 30px;">
                     <button style="all: unset; cursor: pointer;" id="ShowFollowersButton" onclick="ShowFollowers()">
                         @Html.DisplayNameFor(model => model.Followers) <span id="FollowersAmount" style="font-weight: bold;">@Html.DisplayFor(model => model.Followers.Count)</span>
