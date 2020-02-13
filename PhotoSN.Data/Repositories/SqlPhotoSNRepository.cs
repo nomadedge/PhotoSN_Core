@@ -845,6 +845,7 @@ namespace PhotoSN.Data.Repositories
                     .Include(p => p.InPostHashtags)
                         .ThenInclude(iph => iph.Hashtag)
                     .Where(p => postIds.Contains(p.PostId))
+                    .OrderByDescending(p => p.PostId)
                     .ToListAsync();
 
                 var getPostDtos = _mapper.Map<List<GetPostDto>>(posts);
